@@ -1,0 +1,550 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+
+    font-family: Arial, sans-serif;
+
+    background: #91d9f0;
+}
+
+
+/* =================================
+   GAME
+================================= */
+
+#game {
+    width: 100vw;
+    height: 100vh;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* =================================
+   HUD
+================================= */
+
+#hud {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 80px;
+
+    background: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 35px;
+
+    font-size: 23px;
+    font-weight: bold;
+
+    z-index: 1000;
+}
+
+
+/* =================================
+   SCROLLING WORLD
+================================= */
+
+#world {
+    position: absolute;
+
+    top: 80px;
+    left: 0;
+
+    width: 100%;
+    height: 2000px;
+
+    background: #9bd98e;
+
+    overflow: visible;
+
+    transform: translateY(0);
+
+    z-index: 1;
+}
+
+
+/* =================================
+   ROAD
+================================= */
+
+#roadSvg {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 1800px;
+
+    overflow: visible;
+}
+
+
+/* Road shape */
+
+#mainTrail,
+#spendTrail,
+#saveTrail {
+    fill: none;
+
+    stroke: #737373;
+
+    stroke-width: 190;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* =================================
+   CHOICE CARDS
+================================= */
+
+.choice {
+    position: absolute;
+
+    width: 190px;
+
+    padding: 15px;
+
+    background: white;
+
+    border-radius: 22px;
+
+    text-align: center;
+
+    box-shadow:
+        0 6px 15px rgba(0, 0, 0, 0.25);
+
+    z-index: 100;
+
+    pointer-events: none;
+}
+
+
+/*
+   These are positioned on the two
+   branches of the Y.
+*/
+
+#spendChoice {
+    left: 12%;
+    top: 240px;
+}
+
+
+#saveChoice {
+    right: 12%;
+    top: 240px;
+}
+
+
+.choiceIcon {
+    font-size: 48px;
+    line-height: 1;
+}
+
+
+.choiceTitle {
+    font-size: 23px;
+    font-weight: bold;
+
+    margin-top: 7px;
+}
+
+
+.choiceSub {
+    font-size: 16px;
+
+    margin-top: 4px;
+}
+
+
+.choicePrice {
+    font-size: 20px;
+
+    font-weight: bold;
+
+    margin-top: 5px;
+}
+
+
+/* =================================
+   SCOOTER
+================================= */
+
+/*
+   IMPORTANT:
+   The scooter is NOT inside #world.
+
+   Therefore it does not scroll away.
+*/
+
+#scooter {
+    position: absolute;
+
+    left: 50%;
+    top: 68%;
+
+    transform: translate(-50%, -50%);
+
+    width: 90px;
+    height: 90px;
+
+    font-size: 70px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 800;
+
+    cursor: grab;
+
+    user-select: none;
+
+    touch-action: none;
+}
+
+
+#scooter:active {
+    cursor: grabbing;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1.08);
+}
+
+
+/* =================================
+   PARK DECORATIONS
+================================= */
+
+.tree {
+    position: absolute;
+
+    font-size: 70px;
+
+    z-index: 5;
+}
+
+
+.tree1 {
+    left: 6%;
+    top: 100px;
+}
+
+.tree2 {
+    right: 7%;
+    top: 220px;
+}
+
+.tree3 {
+    left: 13%;
+    top: 450px;
+}
+
+.tree4 {
+    right: 12%;
+    top: 600px;
+}
+
+.tree5 {
+    left: 4%;
+    top: 800px;
+}
+
+.tree6 {
+    right: 5%;
+    top: 900px;
+}
+
+
+/* =================================
+   CLOUDS
+================================= */
+
+.cloud {
+    position: absolute;
+
+    font-size: 60px;
+
+    z-index: 2;
+}
+
+
+.cloud1 {
+    left: 15%;
+    top: 25px;
+}
+
+
+.cloud2 {
+    right: 15%;
+    top: 80px;
+}
+
+
+/* =================================
+   INSTRUCTIONS
+================================= */
+
+#controlText {
+    position: absolute;
+
+    bottom: 20px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    background: white;
+
+    padding: 12px 25px;
+
+    border-radius: 25px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    z-index: 1000;
+
+    box-shadow:
+        0 3px 10px rgba(0,0,0,0.15);
+}
+
+
+/* =================================
+   START SCREEN
+================================= */
+
+#startScreen {
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.4);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 3000;
+}
+
+
+#startBox {
+    width: 530px;
+
+    padding: 40px;
+
+    background: white;
+
+    border-radius: 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,0.3);
+}
+
+
+.bigScooter {
+    font-size: 80px;
+}
+
+
+#startBox h1 {
+    font-size: 42px;
+
+    margin: 8px 0;
+}
+
+
+#startBox p {
+    font-size: 20px;
+
+    line-height: 1.5;
+}
+
+
+.howToPlay {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 35px;
+
+    margin: 25px 0;
+
+    font-size: 25px;
+}
+
+
+.howToPlay div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.startMoney {
+    font-size: 24px;
+
+    font-weight: bold;
+
+    margin: 20px;
+}
+
+
+#startButton {
+    border: none;
+
+    background: #4caf50;
+
+    color: white;
+
+    padding: 18px 45px;
+
+    border-radius: 18px;
+
+    font-size: 23px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* =================================
+   RESULT MESSAGE
+================================= */
+
+#resultMessage {
+    position: absolute;
+
+    left: 50%;
+    top: 38%;
+
+    transform: translate(-50%, -50%);
+
+    display: none;
+
+    z-index: 1500;
+}
+
+
+#resultBox {
+    background: white;
+
+    padding: 25px 40px;
+
+    border-radius: 25px;
+
+    text-align: center;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.3);
+}
+
+
+#resultIcon {
+    font-size: 60px;
+}
+
+
+#resultText {
+    font-size: 25px;
+
+    font-weight: bold;
+
+    margin-top: 8px;
+}
+
+
+/* =================================
+   FINISH
+================================= */
+
+#finishScreen {
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.45);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 3000;
+}
+
+
+#finishBox {
+    width: 500px;
+
+    padding: 40px;
+
+    background: white;
+
+    border-radius: 30px;
+
+    text-align: center;
+}
+
+
+#finishBox h1 {
+    font-size: 40px;
+}
+
+
+#finalSavings {
+    font-size: 65px;
+
+    font-weight: bold;
+
+    margin: 20px;
+}
+
+
+#finalMessage {
+    font-size: 20px;
+}
+
+
+#finishBox button {
+    border: none;
+
+    background: #4caf50;
+
+    color: white;
+
+    padding: 15px 30px;
+
+    border-radius: 15px;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
