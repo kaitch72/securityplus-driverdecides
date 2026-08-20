@@ -1,8 +1,3 @@
-/* ========================================
-   DRIVER DECIDES
-   1920 x 1080 FIXED GAME
-======================================== */
-
 * {
     box-sizing: border-box;
 }
@@ -14,92 +9,87 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-
     font-family: Arial, Helvetica, sans-serif;
-    background: #9edcf5;
 }
 
-
-/* ========================================
-   FIXED 1920 x 1080 GAME
-======================================== */
+body {
+    background: #9ed8ef;
+}
 
 #game {
-    position: absolute;
-
-    width: 1920px;
-    height: 1080px;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-    transform-origin: center center;
-
+    position: relative;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
-
-    background: #a8d995;
+    background: #9ed8ef;
 }
 
 
-/* ========================================
-   SKY
-======================================== */
+/* ================= WORLD ================= */
 
 #sky {
     position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 34%;
-
-    background: #9edcf5;
-
-    z-index: 1;
+    inset: 0 0 58% 0;
+    background: #a8daf0;
 }
-
-
-/* ========================================
-   GRASS
-======================================== */
 
 #grass {
     position: absolute;
-
     left: 0;
+    right: 0;
     top: 34%;
+    bottom: 0;
+    background: #acd996;
+}
 
-    width: 100%;
-    height: 66%;
+#road {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 43%;
+    height: 36%;
+    background: #777;
+    border-top: 7px solid #666;
+    border-bottom: 7px solid #666;
+}
 
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            #a8d995 0px,
-            #a8d995 110px,
-            #b8e3a5 110px,
-            #b8e3a5 125px
-        );
+.roadLine {
+    position: absolute;
+    width: 8%;
+    height: 10px;
+    background: white;
+    border-radius: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
 
-    z-index: 2;
+.line1 {
+    left: 4%;
+}
+
+.line2 {
+    left: 27%;
+}
+
+.line3 {
+    left: 50%;
+}
+
+.line4 {
+    left: 73%;
+}
+
+.line5 {
+    left: 96%;
 }
 
 
-/* ========================================
-   TREES
-======================================== */
+/* ================= TREES ================= */
 
 .tree {
     position: absolute;
-
-    font-size: 58px;
-
     z-index: 4;
-
-    user-select: none;
-    pointer-events: none;
+    font-size: clamp(28px, 4vw, 65px);
 }
 
 .tree1 {
@@ -108,683 +98,544 @@ body {
 }
 
 .tree2 {
-    left: 28%;
+    left: 29%;
     top: 36%;
 }
 
 .tree3 {
-    left: 55%;
+    left: 56%;
     top: 35%;
 }
 
 .tree4 {
-    left: 78%;
+    left: 77%;
     top: 36%;
 }
 
 .tree5 {
-    left: 90%;
+    right: 4%;
     top: 35%;
 }
 
 
-/* ========================================
-   ROAD
-======================================== */
-
-#road {
-    position: absolute;
-
-    left: 0;
-    top: 42%;
-
-    width: 100%;
-    height: 40%;
-
-    background: #777;
-
-    border-top: 8px solid #666;
-    border-bottom: 8px solid #666;
-
-    z-index: 10;
-
-    overflow: hidden;
-}
-
-
-/* ========================================
-   ROAD LINES
-======================================== */
-
-.roadLine {
-    position: absolute;
-
-    width: 140px;
-    height: 10px;
-
-    background: white;
-
-    border-radius: 10px;
-
-    top: 52%;
-}
-
-.line1 {
-    left: 4%;
-}
-
-.line2 {
-    left: 25%;
-}
-
-.line3 {
-    left: 46%;
-}
-
-.line4 {
-    left: 67%;
-}
-
-.line5 {
-    left: 88%;
-}
-
-
-/* ========================================
-   MOVING WORLD
-======================================== */
-
-#world {
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 1920px;
-    height: 1080px;
-
-    z-index: 30;
-
-    pointer-events: none;
-}
-
-
-
-/* ========================================
-   DECISION AREA
-======================================== */
-
-#decision {
-    position: absolute;
-
-    left: 48%;
-    top: 36%;
-
-    width: 420px;
-    height: 500px;
-
-    z-index: 40;
-
-    pointer-events: none;
-}
-
-
-/* ========================================
-   DECISION CARDS
-======================================== */
-
-.choice {
-    position: absolute;
-
-    left: 0;
-
-    width: 360px;
-    min-height: 190px;
-
-    padding: 24px 25px 30px 25px;
-
-    background: white;
-
-    border: 5px solid #444;
-
-    border-radius: 25px;
-
-    box-shadow:
-        0 8px 15px rgba(0, 0, 0, 0.25);
-
-    text-align: center;
-
-    z-index: 50;
-
-    font-weight: bold;
-}
-
-
-/* ========================================
-   SPEND CARD
-======================================== */
-
-#spendChoice {
-    top: 0;
-}
-
-
-/* ========================================
-   SAVE CARD
-======================================== */
-
-#saveChoice {
-    top: 340px;
-}
-
-
-/* ========================================
-   CHOICE CONTENT
-======================================== */
-
-#spendIcon,
-.savePig {
-    font-size: 48px;
-
-    line-height: 1;
-
-    margin-bottom: 10px;
-}
-
-.choiceTitle {
-    font-size: 27px;
-
-    margin-bottom: 8px;
-
-    font-weight: 900;
-}
-
-#spendName {
-    font-size: 21px;
-
-    margin-bottom: 8px;
-}
-
-#spendCost {
-    font-size: 30px;
-
-    font-weight: 900;
-
-    margin-top: 4px;
-}
-
-.saveText {
-    font-size: 21px;
-
-    line-height: 1.2;
-
-    margin-top: 8px;
-}
-
-
-/* ========================================
-   SCOOTER
-======================================== */
-
-#scooter {
-    position: absolute;
-
-    left: 75%;
-    top: 65%;
-
-    width: 90px;
-    height: 90px;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    font-size: 65px;
-
-    z-index: 100;
-
-    transform: translate(-50%, -50%);
-
-    cursor: grab;
-
-    user-select: none;
-
-    touch-action: none;
-
-    filter:
-        drop-shadow(
-            0 5px 3px rgba(0, 0, 0, 0.25)
-        );
-}
-
-#scooter:active {
-    cursor: grabbing;
-}
-
-
-/* ========================================
-   HUD
-======================================== */
+/* ================= HUD ================= */
 
 #hud {
     position: absolute;
-
-    left: 15px;
-    top: 18px;
+    z-index: 30;
+    top: 12px;
+    left: 12px;
+    right: 12px;
 
     display: flex;
-
+    align-items: flex-start;
     gap: 14px;
-
-    z-index: 300;
 }
 
-
-/* ========================================
-   MONEY BOXES
-======================================== */
+.moneyBox,
+#itemsBox,
+#goalBox {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 12px 18px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    font-weight: bold;
+}
 
 .moneyBox {
-    width: 160px;
-    min-height: 95px;
-
-    padding: 14px 18px;
-
-    background: white;
-
-    border-radius: 18px;
-
-    box-shadow:
-        0 5px 12px rgba(0, 0, 0, 0.18);
-
-    font-weight: bold;
-
-    font-size: 21px;
+    min-width: 130px;
+    font-size: clamp(15px, 1.4vw, 24px);
 }
 
-.moneyBox > span {
+.moneyBox span {
     display: block;
+    margin-top: 5px;
+    font-size: clamp(20px, 2vw, 32px);
+}
 
-    font-size: 29px;
+.spentBox {
+    background: #fff4e8;
+}
 
+.savingsBox {
+    background: #fffbe5;
+}
+
+#itemsBox {
+    min-width: 240px;
+    font-size: clamp(15px, 1.4vw, 24px);
+}
+
+#items {
+    margin-top: 5px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: clamp(25px, 2.5vw, 40px);
+}
+
+#goalBox {
+    margin-left: auto;
+    width: min(30vw, 450px);
+    min-width: 260px;
+}
+
+#goalTitle {
+    font-size: clamp(14px, 1.3vw, 22px);
+    margin-bottom: 8px;
+}
+
+#progressTrack {
+    width: 100%;
+    height: 20px;
+    background: #e4e4e4;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#progressBar {
+    width: 0%;
+    height: 100%;
+    background: #79b86c;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+#progressText {
+    text-align: center;
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: clamp(13px, 1.2vw, 18px);
+}
+
+
+/* ================= DECISION ================= */
+
+#decision {
+    position: absolute;
+    z-index: 10;
+    left: -600px;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    pointer-events: none;
+}
+
+.choice {
+    position: absolute;
+    left: 0;
+    width: 300px;
+    height: 190px;
+
+    background: white;
+    border: 5px solid #444;
+    border-radius: 22px;
+
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.spendChoice {
+    top: 37%;
+}
+
+.saveChoice {
+    top: 64%;
+}
+
+.choiceTitle {
+    font-size: clamp(22px, 2vw, 34px);
+    font-weight: 900;
+    margin-top: 6px;
+}
+
+#spendIcon,
+.savePig {
+    font-size: clamp(35px, 4vw, 55px);
+}
+
+#spendName {
+    font-size: clamp(17px, 1.7vw, 26px);
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+#spendCost {
+    font-size: clamp(24px, 2.3vw, 36px);
+    font-weight: 900;
+    margin-top: 5px;
+}
+
+.saveText {
+    font-size: clamp(16px, 1.5vw, 23px);
+    font-weight: bold;
+    line-height: 1.2;
     margin-top: 6px;
 }
 
 
-/* Spent */
+/* ================= SCOOTER ================= */
 
-.spentBox {
-    background: #fff3e5;
+#scooter {
+    position: absolute;
+    z-index: 15;
+
+    left: 75%;
+    top: 61%;
+
+    transform: translate(-50%, -50%);
+
+    font-size: clamp(42px, 5vw, 75px);
+
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+
+    filter: drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.25));
 }
 
 
-/* Piggy Bank */
-
-.savingsBox {
-    background: #fffbe7;
-}
-
-
-/* ========================================
-   ITEMS INVENTORY
-======================================== */
-
-#itemsBox {
-    width: 300px;
-    min-height: 95px;
-
-    padding: 14px 18px;
-
-    background: white;
-
-    border-radius: 18px;
-
-    box-shadow:
-        0 5px 12px rgba(0, 0, 0, 0.18);
-
-    font-weight: bold;
-
-    font-size: 21px;
-}
-
-
-/* Inventory Icons */
-
-#items {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    margin-top: 8px;
-
-    min-height: 35px;
-
-    font-size: 30px;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-}
-
-
-/* ========================================
-   INSTRUCTIONS
-======================================== */
+/* ================= INSTRUCTIONS ================= */
 
 #instructions {
     position: absolute;
+    z-index: 25;
 
     left: 50%;
-    bottom: 22px;
-
+    bottom: 20px;
     transform: translateX(-50%);
 
-    padding: 18px 30px;
-
     background: white;
-
     border-radius: 30px;
+    padding: 13px 28px;
 
-    box-shadow:
-        0 5px 12px rgba(0, 0, 0, 0.2);
-
-    font-size: 23px;
-
+    font-size: clamp(15px, 1.6vw, 25px);
     font-weight: bold;
 
-    text-align: center;
-
-    z-index: 300;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
 
     white-space: nowrap;
 }
 
 
-/* ========================================
-   START / FINISH SCREENS
-======================================== */
+/* ================= OVERLAYS ================= */
 
 #startScreen,
-#finishScreen {
-    position: absolute;
-
-    inset: 0;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    background:
-        rgba(0, 0, 0, 0.35);
-
-    z-index: 500;
-}
-
-
-/* ========================================
-   START / FINISH CARDS
-======================================== */
-
-.startCard,
-.finishCard {
-    width: 760px;
-
-    max-height: 900px;
-
-    padding: 45px;
-
-    background: white;
-
-    border-radius: 30px;
-
-    text-align: center;
-
-    box-shadow:
-        0 12px 30px rgba(0, 0, 0, 0.3);
-
-    overflow-y: auto;
-}
-
-.startCard h1,
-.finishCard h1 {
-    font-size: 48px;
-
-    margin: 10px 0 15px;
-}
-
-.startCard p,
-.finishCard p {
-    font-size: 25px;
-
-    line-height: 1.4;
-}
-
-.smallInstruction {
-    font-size: 20px !important;
-}
-
-
-/* ========================================
-   BIG ICON
-======================================== */
-
-.bigIcon {
-    font-size: 80px;
-}
-
-
-/* ========================================
-   BUTTONS
-======================================== */
-
-button {
-    border: none;
-
-    border-radius: 18px;
-
-    padding: 18px 35px;
-
-    font-size: 24px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    background: #4caf50;
-
-    color: white;
-
-    box-shadow:
-        0 5px 10px rgba(0, 0, 0, 0.2);
-}
-
-button:hover {
-    transform: scale(1.03);
-}
-
-button:disabled {
-    opacity: 0.4;
-
-    cursor: not-allowed;
-
-    transform: none;
-}
-
-#playAgainButton {
-    margin-top: 25px;
-    background: #4caf50;
-}
-
-
-/* ========================================
-   RESULT POPUPS
-======================================== */
-
+#finishScreen,
 #resultMessage,
 #interestMessage {
     position: absolute;
+    z-index: 100;
 
     inset: 0;
 
     display: none;
-
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
-    background:
-        rgba(0, 0, 0, 0.25);
-
-    z-index: 600;
+    background: rgba(0, 0, 0, 0.48);
 }
 
+#startScreen {
+    display: flex;
+}
 
-.resultCard {
-    width: 550px;
-
-    padding: 40px;
+.startCard,
+.finishCard {
+    width: min(900px, 90vw);
+    max-height: 94vh;
+    overflow-y: auto;
 
     background: white;
+    border-radius: 35px;
 
-    border-radius: 30px;
+    padding: 45px;
 
     text-align: center;
 
-    box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
 
-    font-size: 30px;
+.bigIcon {
+    font-size: clamp(50px, 6vw, 90px);
+}
+
+.startCard h1,
+.finishCard h1 {
+    font-size: clamp(42px, 5vw, 76px);
+    margin: 10px 0 20px;
+}
+
+.startCard h2,
+.finishCard h2 {
+    font-size: clamp(25px, 3vw, 42px);
+    margin-top: 35px;
+}
+
+.startCard p,
+.finishCard p {
+    font-size: clamp(17px, 1.8vw, 27px);
+    line-height: 1.35;
+}
+
+.introLead {
+    margin-bottom: 30px;
+}
+
+
+/* ================= GOAL CHOICES ================= */
+
+#goalChoices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 25px auto 10px;
+    max-width: 700px;
+}
+
+.goalPrize {
+    min-height: 105px;
+
+    border: 5px solid #ddd;
+    border-radius: 20px;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    font-size: clamp(18px, 2vw, 28px);
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        background 0.15s ease;
+
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.goalPrize:hover {
+    transform: translateY(-3px);
+}
+
+.goalPrize.selected {
+    border-color: #72b765;
+    background: #f1faee;
+}
+
+.goalPrize span {
+    font-weight: normal;
+}
+
+#goalSelectionMessage {
+    min-height: 30px;
+    margin: 12px 0;
+    font-size: clamp(17px, 1.7vw, 24px);
+    font-weight: bold;
+}
+
+
+/* ================= BUTTONS ================= */
+
+#startButton,
+#playAgainButton {
+    border: none;
+    border-radius: 18px;
+
+    padding: 18px 42px;
+
+    background: #83bd72;
+    color: white;
+
+    font-size: clamp(22px, 2.4vw, 34px);
+    font-weight: 900;
+
+    cursor: pointer;
+
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.18);
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+#startButton:hover:not(:disabled),
+#playAgainButton:hover {
+    transform: translateY(-3px);
+}
+
+#startButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+
+/* ================= RESULT ================= */
+
+.resultCard {
+    background: white;
+    border-radius: 25px;
+    padding: 30px 45px;
+
+    text-align: center;
+
+    font-size: clamp(20px, 2vw, 32px);
+    font-weight: bold;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 #resultIcon {
-    font-size: 75px;
-
-    margin-bottom: 15px;
+    font-size: 55px;
+    margin-bottom: 10px;
 }
 
-#resultText {
-    font-size: 32px;
 
+/* ================= FINISH ================= */
+
+#goalCompleteMessage {
+    background: #eef9e9;
+    border-radius: 15px;
+    padding: 15px;
+    font-size: clamp(19px, 2vw, 28px);
     font-weight: bold;
+    margin: 20px 0;
 }
-
-
-/* ========================================
-   FINAL MONEY
-======================================== */
 
 .finalMoney {
     display: flex;
-
     justify-content: center;
+    gap: 70px;
 
-    gap: 50px;
+    margin: 25px 0;
+}
 
-    margin: 20px 0;
-
-    font-size: 25px;
-
-    font-weight: bold;
+.finalMoney > div {
+    font-size: clamp(18px, 1.8vw, 26px);
 }
 
 .finalMoney strong {
     display: block;
-
-    font-size: 32px;
-
+    font-size: clamp(28px, 3vw, 42px);
     margin-top: 5px;
 }
 
-
-/* ========================================
-   PRIZES
-======================================== */
-
-#prizes {
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 18px;
-
-    margin-top: 25px;
-}
-
-
-.prize {
-    padding: 20px;
-
-    min-height: 130px;
-
-    background: #f7f7f7;
-
-    color: #222;
-
-    border: 3px solid #ddd;
-
-    border-radius: 20px;
-
-    box-shadow: none;
+#finalItems {
+    min-height: 70px;
 
     display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
     justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 
-    gap: 5px;
+    font-size: clamp(35px, 4vw, 55px);
 }
 
+#finalPrize {
+    margin: 15px auto 25px;
 
-.prize strong {
-    display: block;
+    width: min(400px, 80%);
 
-    font-size: 23px;
+    border: 4px solid #ddd;
+    border-radius: 20px;
+    padding: 18px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    font-size: clamp(18px, 2vw, 28px);
 }
 
-
-.prize span {
-    font-size: 18px;
+#finalPrizeIcon {
+    font-size: 40px;
 }
 
-
-/* ========================================
-   PRIZE RESULT
-======================================== */
+#finalPrize span {
+    font-weight: normal;
+}
 
 #prizeResult {
-    margin-top: 20px;
-
-    font-size: 24px;
-
+    min-height: 30px;
+    margin: 10px 0 20px;
     font-weight: bold;
 }
 
 
-/* ========================================
-   RESPONSIVE SCALING
-======================================== */
+/* ================= RESPONSIVE ================= */
 
-@media (max-width: 1920px), (max-height: 1080px) {
+@media (max-width: 900px) {
 
-    #game {
-        transform:
-            translate(-50%, -50%)
-            scale(
-                min(
-                    calc(100vw / 1920),
-                    calc(100vh / 1080)
-                )
-            );
+    #hud {
+        gap: 7px;
+    }
+
+    .moneyBox,
+    #itemsBox,
+    #goalBox {
+        padding: 8px 10px;
+        border-radius: 10px;
+    }
+
+    .moneyBox {
+        min-width: 90px;
+    }
+
+    #itemsBox {
+        min-width: 120px;
+    }
+
+    #goalBox {
+        min-width: 180px;
+    }
+
+    .choice {
+        width: 240px;
+        height: 155px;
+    }
+
+    #decision {
+        width: 240px;
+    }
+
+    .startCard,
+    .finishCard {
+        padding: 25px;
     }
 }
 
-/* ========================================
-   FINAL DECISION CARD POSITION FIX
-======================================== */
+@media (max-width: 650px) {
+
+    #goalChoices {
+        grid-template-columns: 1fr;
+    }
+
+    .startCard,
+    .finishCard {
+        width: 94vw;
+    }
+
+    .finalMoney {
+        gap: 30px;
+    }
+
+    #instructions {
+        white-space: normal;
+        width: 90%;
+        text-align: center;
+    }
+}

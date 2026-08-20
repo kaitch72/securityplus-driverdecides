@@ -26,10 +26,41 @@ let scooterY = 62;
 let dragging = false;
 let dragOffsetY = 0;
 
+let savesSinceBonus = 0;
+
+let selectedGoal = null;
+
 
 /* ========================================
-   DECISION LIST
-   CHEAP FIRST → MORE EXPENSIVE LATER
+   GOALS / PRIZES
+======================================== */
+
+const goals = [
+    {
+        icon: "🎮",
+        name: "Small Game",
+        cost: 5
+    },
+    {
+        icon: "🎨",
+        name: "Art Set",
+        cost: 8
+    },
+    {
+        icon: "⚽",
+        name: "Soccer Ball",
+        cost: 10
+    },
+    {
+        icon: "🚲",
+        name: "New Bike",
+        cost: 15
+    }
+];
+
+
+/* ========================================
+   SPENDING DECISIONS
 ======================================== */
 
 const decisions = [
@@ -89,41 +120,22 @@ const decisions = [
    ELEMENTS
 ======================================== */
 
-const game =
-    document.getElementById("game");
+const game = document.getElementById("game");
 
-const scooter =
-    document.getElementById("scooter");
+const scooter = document.getElementById("scooter");
 
-const world =
-    document.getElementById("world");
+const decision = document.getElementById("decision");
 
-const decision =
-    document.getElementById("decision");
+const spendChoice = document.getElementById("spendChoice");
+const saveChoice = document.getElementById("saveChoice");
 
-const spendChoice =
-    document.getElementById("spendChoice");
+const spendIcon = document.getElementById("spendIcon");
+const spendName = document.getElementById("spendName");
+const spendCost = document.getElementById("spendCost");
 
-const saveChoice =
-    document.getElementById("saveChoice");
-
-const spendIcon =
-    document.getElementById("spendIcon");
-
-const spendName =
-    document.getElementById("spendName");
-
-const spendCost =
-    document.getElementById("spendCost");
-
-const walletDisplay =
-    document.getElementById("wallet");
-
-const spentDisplay =
-    document.getElementById("spent");
-
-const savingsDisplay =
-    document.getElementById("savings");
+const walletDisplay = document.getElementById("wallet");
+const spentDisplay = document.getElementById("spent");
+const savingsDisplay = document.getElementById("savings");
 
 const instructions =
     document.getElementById("instructions");
@@ -161,8 +173,110 @@ const prizeResult =
 const itemsDisplay =
     document.getElementById("items");
 
-    const playAgainButton =
-    document.getElementById("playAgainButton");
+
+/* ========================================
+   SAFE TEXT HELPER
+======================================== */
+
+function setText(element, value) {
+
+    if (element) {
+        element.textContent = value;
+    }
+
+}
+
+
+/* ========================================
+   FIND GOAL BUTTONS
+======================================== */
+
+function getGoalButtons() {
+
+    if (!startScreen) {
+        return [];
+    }
+
+    return Array.from(
+        startScreen.querySelectorAll(
+            "button[data-cost]"
+        )
+    ).filter(
+        button =>
+            !button.classList.contains("prize")
+    );
+
+}
+
+
+/* ========================================
+   CREATE / FIND GOAL DISPLAY
+======================================== */
+
+let goalNameDisplay =
+    document.getElementById("goalName");
+
+let goalCostDisplay =
+    document.getElementById("goalCost");
+
+let goalIconDisplay =
+    document.getElementById("goalIcon");
+
+let goalProgressFill =
+    document.getElementById("goalProgressFill");
+
+let goalProgressText =
+    document.getElementById("goalProgressText");
+
+
+/* ========================================
+   PROGRESS BAR
+======================================== */
+
+function updateGoalProgress() {
+
+    if (!selectedGoal) {
+        return;
+    }
+
+    const percentage =
+        Math.min(
+            100,
+            Math.round(
+                (savings / selectedGoal.cost) * 100
+            )
+        );
+
+    if (goalProgressFill) {
+
+        goalProgressFill.style.width =
+            percentage + "%";
+
+    }
+
+    if (goalProgressText) {
+
+        goalProgressText.textContent =
+            `$${savings} / $${selectedGoal.cost}`;
+
+    }
+
+    setText(
+        goalNameDisplay,
+        selectedGoal.name
+    );
+
+    setText(
+        goalCostDisplay,
+        "$" + selectedGoal.cost
+    );
+
+    setText(
+        goalIconDisplay,
+        selectedGoal.icon
+    );
+
+}
 
 
 /* ========================================
@@ -195,6 +309,7 @@ function updateInventory() {
                         justify-content:center;
                         width:42px;
                         height:42px;
+                        font-size:28px;
                     "
                 >
                     ${item.icon}
@@ -202,6 +317,7 @@ function updateInventory() {
             `;
 
         }).join("");
+
 }
 
 
@@ -211,12 +327,97 @@ function updateInventory() {
 
 function updateMoney() {
 
-    walletDisplay.textContent = wallet;
-    spentDisplay.textContent = spent;
-    savingsDisplay.textContent = savings;
+    setText(
+        walletDisplay,
+        wallet
+    );
+
+    setText(
+        spentDisplay,
+        spent
+    );
+
+    setText(
+        savingsDisplay,
+        savings
+    );
 
     updateInventory();
+
+    updateGoalProgress();
+
 }
+
+
+/* ========================================
+   SELECT GOAL
+======================================== */
+
+function selectGoal(goal) {
+
+    selectedGoal = goal;
+
+    getGoalButtons().forEach(button => {
+
+        const buttonCost =
+            Number(
+                button.dataset.cost
+            );
+
+        const isSelected =
+            buttonCost === goal.cost;
+
+        button.classList.toggle(
+            "selected",
+            isSelected
+        );
+
+    });
+
+    updateGoalProgress();
+
+    const message =
+        document.getElementById("goalMessage");
+
+    if (message) {
+
+        message.textContent =
+            `🎯 Your goal: ${goal.icon} ${goal.name} — save $${goal.cost}!`;
+
+    }
+
+}
+
+
+/* ========================================
+   SET UP GOAL BUTTONS
+======================================== */
+
+getGoalButtons().forEach(button => {
+
+    button.addEventListener(
+        "click",
+        function () {
+
+            const cost =
+                Number(
+                    button.dataset.cost
+                );
+
+            const goal =
+                goals.find(
+                    item =>
+                        item.cost === cost
+                );
+
+            if (goal) {
+                selectGoal(goal);
+            }
+
+        }
+    );
+
+});
 
 
 /* ========================================
@@ -224,6 +425,10 @@ function updateMoney() {
 ======================================== */
 
 function loadDecision() {
+
+    if (!gameRunning) {
+        return;
+    }
 
     if (currentDecision >= decisions.length) {
 
@@ -235,41 +440,39 @@ function loadDecision() {
     const d =
         decisions[currentDecision];
 
+    setText(
+        spendIcon,
+        d.icon
+    );
 
-    spendIcon.textContent =
-        d.icon;
+    setText(
+        spendName,
+        d.name
+    );
 
-    spendName.textContent =
-        d.name;
-
-    spendCost.textContent =
-        "$" + d.cost;
-
-
-    /*
-       Start completely off-screen
-       on the LEFT.
-    */
+    setText(
+        spendCost,
+        "$" + d.cost
+    );
 
     decision.style.left =
         "-500px";
 
-
     decisionMoving = true;
     decisionStopped = false;
 
-
-    instructions.textContent =
-        "Ride toward the next decision!";
-
+    setText(
+        instructions,
+        "Ride toward the next choice!"
+    );
 
     moveDecisionToScooter();
+
 }
 
 
 /* ========================================
-   MOVE DECISION FROM LEFT
-   STOP IN FRONT OF SCOOTER
+   MOVE CARD TOWARD SCOOTER
 ======================================== */
 
 function moveDecisionToScooter() {
@@ -282,26 +485,35 @@ function moveDecisionToScooter() {
         return;
     }
 
-
     let currentLeft =
         parseFloat(
             decision.style.left
-        ) || -500;
+        );
 
+    if (Number.isNaN(currentLeft)) {
+        currentLeft = -500;
+    }
 
     /*
-       The scooter is around x = 1440.
-
-       The cards are approximately
-       360px wide.
-
-       1000px means the card ends
-       around x = 1360, leaving a
-       visible gap before the scooter.
+       The decision cards stop just BEFORE
+       the scooter instead of on top of it.
     */
 
-    const targetLeft = 1000;
+    const scooterRect =
+        scooter.getBoundingClientRect();
 
+    const gameRect =
+        game.getBoundingClientRect();
+
+    const scooterRight =
+        scooterRect.right -
+        gameRect.left;
+
+    const decisionWidth =
+        decision.offsetWidth || 320;
+
+    const targetLeft =
+        scooterRight - decisionWidth - 45;
 
     if (currentLeft < targetLeft) {
 
@@ -310,27 +522,25 @@ function moveDecisionToScooter() {
         decision.style.left =
             currentLeft + "px";
 
-
         requestAnimationFrame(
             moveDecisionToScooter
         );
 
-    }
-
-    else {
+    } else {
 
         decision.style.left =
             targetLeft + "px";
 
-
         decisionMoving = false;
-
         decisionStopped = true;
 
+        setText(
+            instructions,
+            "Choose! Drag UP to spend or DOWN to save."
+        );
 
-        instructions.textContent =
-            "Choose! Drag your scooter UP or DOWN, then let go.";
     }
+
 }
 
 
@@ -338,105 +548,109 @@ function moveDecisionToScooter() {
    SCOOTER DRAGGING
 ======================================== */
 
-scooter.addEventListener(
-    "pointerdown",
-    function (event) {
+if (scooter) {
 
-        if (!gameRunning) {
-            return;
-        }
+    scooter.addEventListener(
+        "pointerdown",
+        function (event) {
 
+            if (!gameRunning) {
+                return;
+            }
 
-        dragging = true;
+            if (!decisionStopped) {
+                return;
+            }
 
+            dragging = true;
 
-        scooter.setPointerCapture(
-            event.pointerId
-        );
-
-
-        const rect =
-            game.getBoundingClientRect();
-
-
-        const scale =
-            rect.width / 1920;
-
-
-        const mouseY =
-            (event.clientY - rect.top)
-            / scale;
-
-
-        const scooterTop =
-            scooterY / 100 * 1080;
-
-
-        dragOffsetY =
-            mouseY - scooterTop;
-
-
-        scooter.style.cursor =
-            "grabbing";
-    }
-);
-
-
-/* ========================================
-   SCOOTER MOVE
-======================================== */
-
-scooter.addEventListener(
-    "pointermove",
-    function (event) {
-
-        if (!dragging) {
-            return;
-        }
-
-
-        const rect =
-            game.getBoundingClientRect();
-
-
-        const scale =
-            rect.width / 1920;
-
-
-        let mouseY =
-            (event.clientY - rect.top)
-            / scale;
-
-
-        mouseY -= dragOffsetY;
-
-
-        let newPercent =
-            (mouseY / 1080) * 100;
-
-
-        /*
-           Keep scooter on road.
-        */
-
-        newPercent =
-            Math.max(
-                47,
-                Math.min(
-                    77,
-                    newPercent
-                )
+            scooter.setPointerCapture(
+                event.pointerId
             );
 
+            const rect =
+                game.getBoundingClientRect();
 
-        scooterY =
-            newPercent;
+            const gameHeight =
+                rect.height;
+
+            const mouseY =
+                event.clientY -
+                rect.top;
+
+            const scooterTop =
+                (scooterY / 100) *
+                gameHeight;
+
+            dragOffsetY =
+                mouseY -
+                scooterTop;
+
+            scooter.style.cursor =
+                "grabbing";
+
+        }
+    );
 
 
-        scooter.style.top =
-            scooterY + "%";
-    }
-);
+    scooter.addEventListener(
+        "pointermove",
+        function (event) {
+
+            if (!dragging) {
+                return;
+            }
+
+            const rect =
+                game.getBoundingClientRect();
+
+            const gameHeight =
+                rect.height;
+
+            let mouseY =
+                event.clientY -
+                rect.top;
+
+            mouseY -= dragOffsetY;
+
+            let newPercent =
+                (mouseY / gameHeight) * 100;
+
+            /*
+               Keep scooter on the road.
+            */
+
+            newPercent =
+                Math.max(
+                    48,
+                    Math.min(
+                        76,
+                        newPercent
+                    )
+                );
+
+            scooterY =
+                newPercent;
+
+            scooter.style.top =
+                scooterY + "%";
+
+        }
+    );
+
+
+    scooter.addEventListener(
+        "pointerup",
+        releaseScooter
+    );
+
+
+    scooter.addEventListener(
+        "pointercancel",
+        releaseScooter
+    );
+
+}
 
 
 /* ========================================
@@ -449,33 +663,29 @@ function releaseScooter(event) {
         return;
     }
 
-
     dragging = false;
 
-
-    scooter.style.cursor =
-        "grab";
-
+    if (scooter) {
+        scooter.style.cursor = "grab";
+    }
 
     try {
 
-        scooter.releasePointerCapture(
-            event.pointerId
-        );
+        if (
+            scooter &&
+            event.pointerId !== undefined
+        ) {
 
+            scooter.releasePointerCapture(
+                event.pointerId
+            );
+
+        }
+
+    } catch (error) {
+        // Nothing needed here.
     }
 
-    catch (e) {}
-
-
-    /*
-       IMPORTANT:
-
-       Releasing does NOT show the popup.
-
-       First the card moves past
-       the scooter.
-    */
 
     if (
         gameRunning &&
@@ -483,20 +693,10 @@ function releaseScooter(event) {
     ) {
 
         makeDecision();
+
     }
+
 }
-
-
-scooter.addEventListener(
-    "pointerup",
-    releaseScooter
-);
-
-
-scooter.addEventListener(
-    "pointercancel",
-    releaseScooter
-);
 
 
 /* ========================================
@@ -509,13 +709,10 @@ function makeDecision() {
         return;
     }
 
-
     decisionStopped = false;
-
 
     const scooterPosition =
         scooterY;
-
 
     /*
        Upper lane = SPEND
@@ -525,119 +722,31 @@ function makeDecision() {
     const spendY = 58;
     const saveY = 72;
 
-
     const distanceToSpend =
         Math.abs(
-            scooterPosition - spendY
+            scooterPosition -
+            spendY
         );
-
 
     const distanceToSave =
         Math.abs(
-            scooterPosition - saveY
+            scooterPosition -
+            saveY
         );
-
-
-    /*
-       Decide which action was selected,
-       but DO NOT execute it yet.
-
-       The card must pass the scooter first.
-    */
 
     if (
         distanceToSpend <
         distanceToSave
     ) {
 
-        moveDecisionPastScooter(
-            chooseSpend
-        );
+        chooseSpend();
+
+    } else {
+
+        chooseSave();
 
     }
 
-    else {
-
-        moveDecisionPastScooter(
-            chooseSave
-        );
-    }
-}
-
-
-/* ========================================
-   MOVE CARD PAST SCOOTER
-   THEN SHOW RESULT
-======================================== */
-
-function moveDecisionPastScooter(
-    callback
-) {
-
-    decisionMoving = true;
-
-
-    let currentLeft =
-        parseFloat(
-            decision.style.left
-        ) || 1000;
-
-
-    /*
-       Move RIGHT.
-
-       The card starts around x=1000.
-
-       Scooter is around x=1440.
-
-       We move the card all the way
-       past the scooter before calling
-       the decision function.
-    */
-
-    const exitPoint = 2100;
-
-
-    instructions.textContent =
-        "Riding through your choice...";
-
-
-    function movePast() {
-
-        currentLeft += 25;
-
-
-        decision.style.left =
-            currentLeft + "px";
-
-
-        if (currentLeft < exitPoint) {
-
-            requestAnimationFrame(
-                movePast
-            );
-
-        }
-
-        else {
-
-            decisionMoving = false;
-
-
-            /*
-               NOW the card is completely
-               past the scooter.
-
-               Only now do we show
-               the result popup.
-            */
-
-            callback();
-        }
-    }
-
-
-    movePast();
 }
 
 
@@ -650,41 +759,37 @@ function chooseSpend() {
     const d =
         decisions[currentDecision];
 
-
-    /*
-       Not enough money.
-    */
+    if (!d) {
+        return;
+    }
 
     if (wallet < d.cost) {
 
         showResult(
             "😬",
-            "You don't have enough money for this!"
+            "You don't have enough money for that. Try saving!"
         );
 
-
         setTimeout(
-            () => {
+            function () {
+
+                if (!gameRunning) {
+                    return;
+                }
 
                 resultMessage.style.display =
                     "none";
 
+                decisionStopped = true;
 
-                /*
-                   Since the card already
-                   passed, give the player
-                   the next decision.
-                */
-
-                currentDecision++;
-
-
-                loadDecision();
+                setText(
+                    instructions,
+                    "Try the SAVE lane!"
+                );
 
             },
             1500
         );
-
 
         return;
     }
@@ -694,29 +799,29 @@ function chooseSpend() {
 
     spent += d.cost;
 
-
     items.push({
-
         icon: d.icon,
-
-        name: d.name
-
+        name: d.name,
+        cost: d.cost
     });
-
 
     updateMoney();
 
+
+    /*
+       Show the purchase result,
+       then send the cards onward.
+    */
 
     showResult(
         d.icon,
         `You spent $${d.cost} on ${d.name}!`
     );
 
-
     currentDecision++;
 
-
     continueAfterChoice();
+
 }
 
 
@@ -726,72 +831,192 @@ function chooseSpend() {
 
 function chooseSave() {
 
-    if (wallet < 1) {
+    const d =
+        decisions[currentDecision];
 
-        showResult(
-            "💰",
-            "You don't have any money left to save!"
+    if (!d) {
+        return;
+    }
+
+
+    /*
+       Smaller items = save $2
+       Bigger items = save $3
+    */
+
+    let saveAmount;
+
+    if (d.cost <= 4) {
+        saveAmount = 2;
+    } else {
+        saveAmount = 3;
+    }
+
+
+    /*
+       Never save more money than is
+       actually in the wallet.
+    */
+
+    saveAmount =
+        Math.min(
+            saveAmount,
+            wallet
         );
 
 
+    if (saveAmount <= 0) {
+
+        showResult(
+            "💰",
+            "Your wallet is empty!"
+        );
+
         currentDecision++;
 
-
         continueAfterChoice();
-
 
         return;
     }
 
 
-    wallet -= 1;
+    wallet -= saveAmount;
 
-    savings += 2;
+    savings += saveAmount;
 
-    interest += 1;
-
+    savesSinceBonus++;
 
     updateMoney();
 
 
-    showInterest();
+    /*
+       Every 3 saves earns a $2 bonus.
+    */
+
+    if (savesSinceBonus >= 3) {
+
+        savings += 2;
+
+        interest += 2;
+
+        savesSinceBonus = 0;
+
+        updateMoney();
+
+        showInterest();
+
+    } else {
+
+        showResult(
+            "🐷",
+            `You put $${saveAmount} in your Piggy Bank!`
+        );
+
+    }
 
 
     currentDecision++;
 
-
     continueAfterChoice();
+
 }
 
 
 /* ========================================
-   CONTINUE AFTER POPUP
+   CONTINUE AFTER CHOICE
 ======================================== */
 
 function continueAfterChoice() {
 
-    /*
-       The card has ALREADY gone off screen.
-
-       We only wait for the popup,
-       then bring in the next card.
-    */
-
     setTimeout(
-        () => {
+        function () {
 
-            resultMessage.style.display =
-                "none";
+            if (resultMessage) {
+                resultMessage.style.display =
+                    "none";
+            }
 
-            interestMessage.style.display =
-                "none";
+            if (interestMessage) {
+                interestMessage.style.display =
+                    "none";
+            }
 
-
-            loadDecision();
+            moveDecisionAway();
 
         },
-        1600
+        1400
     );
+
+}
+
+
+/* ========================================
+   MOVE DECISION OUT TO THE RIGHT
+======================================== */
+
+function moveDecisionAway() {
+
+    if (!decision) {
+        return;
+    }
+
+    decisionMoving = true;
+
+    let currentLeft =
+        parseFloat(
+            decision.style.left
+        );
+
+    if (Number.isNaN(currentLeft)) {
+        currentLeft = 1000;
+    }
+
+
+    function moveAway() {
+
+        currentLeft += 20;
+
+        decision.style.left =
+            currentLeft + "px";
+
+
+        /*
+           Keep moving RIGHT until the
+           entire card is off screen.
+        */
+
+        const gameWidth =
+            game.clientWidth;
+
+        if (
+            currentLeft <
+            gameWidth + 600
+        ) {
+
+            requestAnimationFrame(
+                moveAway
+            );
+
+        } else {
+
+            decisionMoving = false;
+
+            setTimeout(
+                function () {
+
+                    loadDecision();
+
+                },
+                250
+            );
+
+        }
+
+    }
+
+
+    moveAway();
+
 }
 
 
@@ -804,37 +1029,64 @@ function showResult(
     message
 ) {
 
-    resultIcon.textContent =
-        icon;
+    if (!resultMessage) {
+        return;
+    }
 
-    resultText.textContent =
-        message;
+    setText(
+        resultIcon,
+        icon
+    );
 
+    setText(
+        resultText,
+        message
+    );
 
     resultMessage.style.display =
         "flex";
+
 }
 
 
 /* ========================================
-   INTEREST MESSAGE
+   INTEREST / BONUS MESSAGE
 ======================================== */
 
 function showInterest() {
+
+    if (!interestMessage) {
+        return;
+    }
+
+    const bonusText =
+        interestMessage.querySelector(
+            "strong"
+        );
+
+    if (bonusText) {
+        bonusText.textContent =
+            "$2 bonus!";
+    }
 
     interestMessage.style.display =
         "flex";
 
 
     setTimeout(
-        () => {
+        function () {
 
-            interestMessage.style.display =
-                "none";
+            if (interestMessage) {
+
+                interestMessage.style.display =
+                    "none";
+
+            }
 
         },
-        1300
+        1600
     );
+
 }
 
 
@@ -847,91 +1099,158 @@ function finishGame() {
     gameRunning = false;
 
     decisionMoving = false;
-
     decisionStopped = false;
+    dragging = false;
 
 
-    finalSavings.textContent =
-        "$" + savings;
+    setText(
+        finalSavings,
+        "$" + savings
+    );
+
+    setText(
+        finalInterest,
+        "$" + interest
+    );
 
 
-    finalInterest.textContent =
-        "$" + interest;
+    /*
+       Update final goal progress.
+    */
+
+    updateGoalProgress();
 
 
-    finishScreen.style.display =
-        "flex";
+    /*
+       Show everything the player bought.
+    */
+
+    const finalItems =
+        document.getElementById(
+            "finalItems"
+        );
+
+    if (finalItems) {
+
+        if (items.length === 0) {
+
+            finalItems.innerHTML =
+                "<span>You didn't buy anything this ride.</span>";
+
+        } else {
+
+            finalItems.innerHTML = `
+                <strong>🛍️ Things you bought:</strong>
+                <div class="finalItemList">
+                    ${items.map(item => `
+                        <span class="finalItem">
+                            ${item.icon}
+                            ${item.name}
+                            ($${item.cost})
+                        </span>
+                    `).join("")}
+                </div>
+            `;
+
+        }
+
+    }
 
 
-    instructions.style.display =
-        "none";
+    /*
+       Show final savings message.
+    */
+
+    const finalMessage =
+        document.getElementById(
+            "finalMessage"
+        );
+
+    if (finalMessage && selectedGoal) {
+
+        if (savings >= selectedGoal.cost) {
+
+            finalMessage.textContent =
+                `🎉 You saved enough for your ${selectedGoal.name}!`;
+
+        } else {
+
+            finalMessage.textContent =
+                `You saved $${savings} toward your ${selectedGoal.name}!`;
+
+        }
+
+    }
+
+
+    if (finishScreen) {
+
+        finishScreen.style.display =
+            "flex";
+
+    }
+
+    if (instructions) {
+
+        instructions.style.display =
+            "none";
+
+    }
+
+
+    updatePrizeButtons();
+
 }
 
 
 /* ========================================
-   START GAME
+   UPDATE PRIZE BUTTONS
 ======================================== */
 
-startButton.addEventListener(
-    "click",
-    function () {
+function updatePrizeButtons() {
 
-        startScreen.style.display =
-            "none";
-
-        finishScreen.style.display =
-            "none";
-
-
-        gameRunning = true;
-
-
-        currentDecision = 0;
-
-
-        wallet = 20;
-
-        spent = 0;
-
-        savings = 0;
-
-        interest = 0;
-
-
-        items = [];
-
-
-        scooterY = 62;
-
-
-        scooter.style.top =
-            scooterY + "%";
-
-
-        scooter.style.left =
-            "75%";
-
-
-        updateMoney();
-
-
-        instructions.style.display =
-            "block";
-
-
-        loadDecision();
+    if (!finishScreen) {
+        return;
     }
-);
+
+    const prizeButtons =
+        finishScreen.querySelectorAll(
+            ".prize"
+        );
+
+    prizeButtons.forEach(
+        function (prize) {
+
+            const cost =
+                Number(
+                    prize.dataset.cost
+                );
+
+            if (
+                selectedGoal &&
+                cost === selectedGoal.cost
+            ) {
+
+                prize.classList.add(
+                    "goalPrize"
+                );
+
+            }
+
+        }
+    );
+
+}
 
 
 /* ========================================
-   BIG PRIZE SELECTION
+   PRIZE SELECTION
 ======================================== */
 
 document
     .querySelectorAll(".prize")
     .forEach(
-        prize => {
+        function (prize) {
 
             prize.addEventListener(
                 "click",
@@ -942,11 +1261,14 @@ document
                             prize.dataset.cost
                         );
 
-
                     if (savings < cost) {
 
-                        prizeResult.textContent =
-                            `You need $${cost}, but you only saved $${savings}. Keep saving next time!`;
+                        if (prizeResult) {
+
+                            prizeResult.textContent =
+                                `You need $${cost}, but you saved $${savings}. Keep saving!`;
+
+                        }
 
                         return;
                     }
@@ -954,79 +1276,283 @@ document
 
                     savings -= cost;
 
-
-                    finalSavings.textContent =
-                        "$" + savings;
+                    updateMoney();
 
 
-                    prizeResult.textContent =
-                        "🎉 You chose this prize! You had enough saved!";
+                    if (finalSavings) {
+
+                        finalSavings.textContent =
+                            "$" + savings;
+
+                    }
+
+
+                    if (prizeResult) {
+
+                        prizeResult.textContent =
+                            "🎉 You got your prize! Great saving!";
+
+                    }
 
 
                     document
                         .querySelectorAll(".prize")
                         .forEach(
-                            p => {
-
+                            function (p) {
                                 p.disabled = true;
-
                             }
                         );
+
                 }
             );
+
         }
     );
+
+
 /* ========================================
    PLAY AGAIN
 ======================================== */
 
-playAgainButton.addEventListener(
-    "click",
-    function () {
+const playAgainButton =
+    document.getElementById(
+        "playAgainButton"
+    );
 
-        /* Reset game */
-        wallet = 20;
-        spent = 0;
-        savings = 0;
-        interest = 0;
 
-        items = [];
+if (playAgainButton) {
 
-        currentDecision = 0;
+    playAgainButton.addEventListener(
+        "click",
+        function () {
 
-        scooterY = 62;
+            resetGame();
+
+        }
+    );
+
+}
+
+
+/* ========================================
+   RESET GAME
+======================================== */
+
+function resetGame() {
+
+    gameRunning = false;
+
+    decisionMoving = false;
+    decisionStopped = false;
+    dragging = false;
+
+    wallet = 20;
+    spent = 0;
+    savings = 0;
+    interest = 0;
+
+    items = [];
+
+    currentDecision = 0;
+
+    scooterY = 62;
+
+    savesSinceBonus = 0;
+
+    selectedGoal = null;
+
+
+    if (scooter) {
 
         scooter.style.top =
             scooterY + "%";
 
-        /* Reset prize buttons */
-        document
-            .querySelectorAll(".prize")
-            .forEach(
-                prize => {
-                    prize.disabled = false;
-                }
-            );
+        scooter.style.cursor =
+            "grab";
 
-        /* Clear old prize message */
-        prizeResult.textContent = "";
+    }
 
-        /* Hide finish screen */
+
+    if (decision) {
+
+        decision.style.left =
+            "-500px";
+
+    }
+
+
+    updateMoney();
+
+
+    if (resultMessage) {
+
+        resultMessage.style.display =
+            "none";
+
+    }
+
+    if (interestMessage) {
+
+        interestMessage.style.display =
+            "none";
+
+    }
+
+    if (finishScreen) {
+
         finishScreen.style.display =
             "none";
 
-        /* Show instructions */
+    }
+
+    if (instructions) {
+
         instructions.style.display =
             "block";
 
-        /* Start game */
-        gameRunning = true;
-
-        updateMoney();
-
-        loadDecision();
     }
-);
+
+
+    /*
+       Re-enable final prize buttons.
+    */
+
+    document
+        .querySelectorAll(".prize")
+        .forEach(
+            function (prize) {
+
+                prize.disabled = false;
+
+                prize.classList.remove(
+                    "goalPrize"
+                );
+
+            }
+        );
+
+
+    if (prizeResult) {
+
+        prizeResult.textContent =
+            "";
+
+    }
+
+
+    /*
+       Return to the goal picker.
+    */
+
+    if (startScreen) {
+
+        startScreen.style.display =
+            "flex";
+
+    }
+
+}
+
+
+/* ========================================
+   START GAME
+======================================== */
+
+if (startButton) {
+
+    startButton.addEventListener(
+        "click",
+        function () {
+
+            /*
+               Player MUST choose a goal first.
+            */
+
+            if (!selectedGoal) {
+
+                const message =
+                    document.getElementById(
+                        "goalMessage"
+                    );
+
+                if (message) {
+
+                    message.textContent =
+                        "🎯 Pick a prize first!";
+
+                }
+
+                return;
+
+            }
+
+
+            if (startScreen) {
+
+                startScreen.style.display =
+                    "none";
+
+            }
+
+            if (finishScreen) {
+
+                finishScreen.style.display =
+                    "none";
+
+            }
+
+
+            gameRunning = true;
+
+            currentDecision = 0;
+
+            wallet = 20;
+            spent = 0;
+            savings = 0;
+            interest = 0;
+
+            items = [];
+
+            savesSinceBonus = 0;
+
+            scooterY = 62;
+
+
+            if (scooter) {
+
+                scooter.style.top =
+                    scooterY + "%";
+
+                scooter.style.cursor =
+                    "grab";
+
+            }
+
+
+            updateMoney();
+
+
+            if (instructions) {
+
+                instructions.style.display =
+                    "block";
+
+            }
+
+
+            setText(
+                instructions,
+                "Ride toward the first choice!"
+            );
+
+
+            loadDecision();
+
+        }
+    );
+
+}
+
 
 /* ========================================
    INITIAL STATE
@@ -1035,21 +1561,41 @@ playAgainButton.addEventListener(
 updateMoney();
 
 
-startScreen.style.display =
-    "flex";
+if (startScreen) {
+
+    startScreen.style.display =
+        "flex";
+
+}
 
 
-finishScreen.style.display =
-    "none";
+if (finishScreen) {
+
+    finishScreen.style.display =
+        "none";
+
+}
 
 
-resultMessage.style.display =
-    "none";
+if (resultMessage) {
+
+    resultMessage.style.display =
+        "none";
+
+}
 
 
-interestMessage.style.display =
-    "none";
+if (interestMessage) {
+
+    interestMessage.style.display =
+        "none";
+
+}
 
 
-instructions.style.display =
-    "block";
+if (instructions) {
+
+    instructions.style.display =
+        "block";
+
+}
