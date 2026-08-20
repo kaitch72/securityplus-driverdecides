@@ -1,508 +1,649 @@
+/* ========================================
+   DRIVER DECIDES
+   1920 x 1080 FIXED GAME
+======================================== */
+
 * {
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 
-    font-family: Arial, sans-serif;
-
-    background: #91d9f0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #9edcf5;
 }
 
 
-/* =================================
-   GAME
-================================= */
+/* ========================================
+   FIXED 1920 x 1080 GAME
+======================================== */
 
 #game {
-    width: 100vw;
-    height: 100vh;
+    position: absolute;
 
-    position: relative;
+    width: 1920px;
+    height: 1080px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+    transform-origin: center center;
 
     overflow: hidden;
+
+    background: #a8d995;
 }
 
 
-/* =================================
-   HUD
-================================= */
+/* ========================================
+   SKY
+======================================== */
 
-#hud {
+#sky {
     position: absolute;
 
+    left: 0;
     top: 0;
-    left: 0;
 
     width: 100%;
-    height: 80px;
+    height: 34%;
 
-    background: white;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 35px;
-
-    font-size: 23px;
-    font-weight: bold;
-
-    z-index: 1000;
-}
-
-
-/* =================================
-   SCROLLING WORLD
-================================= */
-
-#world {
-    position: absolute;
-
-    top: 80px;
-    left: 0;
-
-    width: 100%;
-    height: 2000px;
-
-    background: #9bd98e;
-
-    overflow: visible;
-
-    transform: translateY(0);
+    background: #9edcf5;
 
     z-index: 1;
 }
 
 
-/* =================================
-   ROAD
-================================= */
+/* ========================================
+   GRASS
+======================================== */
 
-#roadSvg {
+#grass {
+    position: absolute;
+
+    left: 0;
+    top: 34%;
+
+    width: 100%;
+    height: 66%;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            #a8d995 0px,
+            #a8d995 110px,
+            #b8e3a5 110px,
+            #b8e3a5 125px
+        );
+
+    z-index: 2;
+}
+
+
+/* ========================================
+   TREES
+======================================== */
+
+.tree {
+    position: absolute;
+
+    font-size: 58px;
+
+    z-index: 4;
+
+    user-select: none;
+    pointer-events: none;
+}
+
+.tree1 {
+    left: 8%;
+    top: 35%;
+}
+
+.tree2 {
+    left: 28%;
+    top: 36%;
+}
+
+.tree3 {
+    left: 55%;
+    top: 35%;
+}
+
+.tree4 {
+    left: 78%;
+    top: 36%;
+}
+
+.tree5 {
+    left: 90%;
+    top: 35%;
+}
+
+
+/* ========================================
+   ROAD
+======================================== */
+
+#road {
+    position: absolute;
+
+    left: 0;
+    top: 42%;
+
+    width: 100%;
+    height: 40%;
+
+    background: #777;
+
+    border-top: 8px solid #666;
+    border-bottom: 8px solid #666;
+
+    z-index: 10;
+
+    overflow: hidden;
+}
+
+
+/* ========================================
+   ROAD LINES
+======================================== */
+
+.roadLine {
+    position: absolute;
+
+    width: 140px;
+    height: 10px;
+
+    background: white;
+
+    border-radius: 10px;
+
+    top: 52%;
+}
+
+.line1 {
+    left: 4%;
+}
+
+.line2 {
+    left: 25%;
+}
+
+.line3 {
+    left: 46%;
+}
+
+.line4 {
+    left: 67%;
+}
+
+.line5 {
+    left: 88%;
+}
+
+
+/* ========================================
+   MOVING WORLD
+======================================== */
+
+#world {
     position: absolute;
 
     left: 0;
     top: 0;
 
-    width: 100%;
-    height: 1800px;
+    width: 1920px;
+    height: 1080px;
 
-    overflow: visible;
-}
-
-
-/* Road shape */
-
-#mainTrail,
-#spendTrail,
-#saveTrail {
-    fill: none;
-
-    stroke: #737373;
-
-    stroke-width: 190;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-
-/* =================================
-   CHOICE CARDS
-================================= */
-
-.choice {
-    position: absolute;
-
-    width: 190px;
-
-    padding: 15px;
-
-    background: white;
-
-    border-radius: 22px;
-
-    text-align: center;
-
-    box-shadow:
-        0 6px 15px rgba(0, 0, 0, 0.25);
-
-    z-index: 100;
+    z-index: 30;
 
     pointer-events: none;
 }
 
 
-/*
-   These are positioned on the two
-   branches of the Y.
-*/
+
+/* ========================================
+   DECISION AREA
+======================================== */
+
+#decision {
+    position: absolute;
+
+    left: 48%;
+    top: 36%;
+
+    width: 420px;
+    height: 500px;
+
+    z-index: 40;
+
+    pointer-events: none;
+}
+
+
+/* ========================================
+   DECISION CARDS
+======================================== */
+
+.choice {
+    position: absolute;
+
+    left: 0;
+
+    width: 360px;
+    min-height: 190px;
+
+    padding: 24px 25px 30px 25px;
+
+    background: white;
+
+    border: 5px solid #444;
+
+    border-radius: 25px;
+
+    box-shadow:
+        0 8px 15px rgba(0, 0, 0, 0.25);
+
+    text-align: center;
+
+    z-index: 50;
+
+    font-weight: bold;
+}
+
+
+/* ========================================
+   SPEND CARD
+======================================== */
 
 #spendChoice {
-    left: 12%;
-    top: 240px;
+    top: 0;
 }
 
+
+/* ========================================
+   SAVE CARD
+======================================== */
 
 #saveChoice {
-    right: 12%;
-    top: 240px;
+    top: 340px;
 }
 
 
-.choiceIcon {
+/* ========================================
+   CHOICE CONTENT
+======================================== */
+
+#spendIcon,
+.savePig {
     font-size: 48px;
-    line-height: 1;
-}
 
+    line-height: 1;
+
+    margin-bottom: 10px;
+}
 
 .choiceTitle {
-    font-size: 23px;
-    font-weight: bold;
+    font-size: 27px;
 
-    margin-top: 7px;
+    margin-bottom: 8px;
+
+    font-weight: 900;
 }
 
+#spendName {
+    font-size: 21px;
 
-.choiceSub {
-    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+#spendCost {
+    font-size: 30px;
+
+    font-weight: 900;
 
     margin-top: 4px;
 }
 
+.saveText {
+    font-size: 21px;
 
-.choicePrice {
-    font-size: 20px;
+    line-height: 1.2;
 
-    font-weight: bold;
-
-    margin-top: 5px;
+    margin-top: 8px;
 }
 
 
-/* =================================
+/* ========================================
    SCOOTER
-================================= */
-
-/*
-   IMPORTANT:
-   The scooter is NOT inside #world.
-
-   Therefore it does not scroll away.
-*/
+======================================== */
 
 #scooter {
     position: absolute;
 
-    left: 50%;
-    top: 68%;
-
-    transform: translate(-50%, -50%);
+    left: 75%;
+    top: 65%;
 
     width: 90px;
     height: 90px;
 
-    font-size: 70px;
-
     display: flex;
 
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
-    z-index: 800;
+    font-size: 65px;
+
+    z-index: 100;
+
+    transform: translate(-50%, -50%);
 
     cursor: grab;
 
     user-select: none;
 
     touch-action: none;
-}
 
+    filter:
+        drop-shadow(
+            0 5px 3px rgba(0, 0, 0, 0.25)
+        );
+}
 
 #scooter:active {
     cursor: grabbing;
-
-    transform:
-        translate(-50%, -50%)
-        scale(1.08);
 }
 
 
-/* =================================
-   PARK DECORATIONS
-================================= */
+/* ========================================
+   HUD
+======================================== */
 
-.tree {
+#hud {
     position: absolute;
 
-    font-size: 70px;
-
-    z-index: 5;
-}
-
-
-.tree1 {
-    left: 6%;
-    top: 100px;
-}
-
-.tree2 {
-    right: 7%;
-    top: 220px;
-}
-
-.tree3 {
-    left: 13%;
-    top: 450px;
-}
-
-.tree4 {
-    right: 12%;
-    top: 600px;
-}
-
-.tree5 {
-    left: 4%;
-    top: 800px;
-}
-
-.tree6 {
-    right: 5%;
-    top: 900px;
-}
-
-
-/* =================================
-   CLOUDS
-================================= */
-
-.cloud {
-    position: absolute;
-
-    font-size: 60px;
-
-    z-index: 2;
-}
-
-
-.cloud1 {
-    left: 15%;
-    top: 25px;
-}
-
-
-.cloud2 {
-    right: 15%;
-    top: 80px;
-}
-
-
-/* =================================
-   INSTRUCTIONS
-================================= */
-
-#controlText {
-    position: absolute;
-
-    bottom: 20px;
-
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    background: white;
-
-    padding: 12px 25px;
-
-    border-radius: 25px;
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    z-index: 1000;
-
-    box-shadow:
-        0 3px 10px rgba(0,0,0,0.15);
-}
-
-
-/* =================================
-   START SCREEN
-================================= */
-
-#startScreen {
-    position: absolute;
-
-    inset: 0;
-
-    background: rgba(0, 0, 0, 0.4);
+    left: 15px;
+    top: 18px;
 
     display: flex;
 
-    align-items: center;
-    justify-content: center;
+    gap: 14px;
 
-    z-index: 3000;
+    z-index: 300;
 }
 
 
-#startBox {
-    width: 530px;
+/* ========================================
+   MONEY BOXES
+======================================== */
 
-    padding: 40px;
+.moneyBox {
+    width: 160px;
+    min-height: 95px;
+
+    padding: 14px 18px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.18);
+
+    font-weight: bold;
+
+    font-size: 21px;
+}
+
+.moneyBox > span {
+    display: block;
+
+    font-size: 29px;
+
+    margin-top: 6px;
+}
+
+
+/* Spent */
+
+.spentBox {
+    background: #fff3e5;
+}
+
+
+/* Piggy Bank */
+
+.savingsBox {
+    background: #fffbe7;
+}
+
+
+/* ========================================
+   ITEMS INVENTORY
+======================================== */
+
+#itemsBox {
+    width: 300px;
+    min-height: 95px;
+
+    padding: 14px 18px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.18);
+
+    font-weight: bold;
+
+    font-size: 21px;
+}
+
+
+/* Inventory Icons */
+
+#items {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 8px;
+
+    min-height: 35px;
+
+    font-size: 30px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+}
+
+
+/* ========================================
+   INSTRUCTIONS
+======================================== */
+
+#instructions {
+    position: absolute;
+
+    left: 50%;
+    bottom: 22px;
+
+    transform: translateX(-50%);
+
+    padding: 18px 30px;
 
     background: white;
 
     border-radius: 30px;
 
-    text-align: center;
-
     box-shadow:
-        0 10px 35px rgba(0,0,0,0.3);
-}
-
-
-.bigScooter {
-    font-size: 80px;
-}
-
-
-#startBox h1 {
-    font-size: 42px;
-
-    margin: 8px 0;
-}
-
-
-#startBox p {
-    font-size: 20px;
-
-    line-height: 1.5;
-}
-
-
-.howToPlay {
-    display: flex;
-
-    justify-content: center;
-
-    gap: 35px;
-
-    margin: 25px 0;
-
-    font-size: 25px;
-}
-
-
-.howToPlay div {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 5px;
-}
-
-
-.startMoney {
-    font-size: 24px;
-
-    font-weight: bold;
-
-    margin: 20px;
-}
-
-
-#startButton {
-    border: none;
-
-    background: #4caf50;
-
-    color: white;
-
-    padding: 18px 45px;
-
-    border-radius: 18px;
+        0 5px 12px rgba(0, 0, 0, 0.2);
 
     font-size: 23px;
 
     font-weight: bold;
 
-    cursor: pointer;
-}
-
-
-/* =================================
-   RESULT MESSAGE
-================================= */
-
-#resultMessage {
-    position: absolute;
-
-    left: 50%;
-    top: 38%;
-
-    transform: translate(-50%, -50%);
-
-    display: none;
-
-    z-index: 1500;
-}
-
-
-#resultBox {
-    background: white;
-
-    padding: 25px 40px;
-
-    border-radius: 25px;
-
     text-align: center;
 
-    box-shadow:
-        0 8px 25px rgba(0,0,0,0.3);
+    z-index: 300;
+
+    white-space: nowrap;
 }
 
 
-#resultIcon {
-    font-size: 60px;
-}
+/* ========================================
+   START / FINISH SCREENS
+======================================== */
 
-
-#resultText {
-    font-size: 25px;
-
-    font-weight: bold;
-
-    margin-top: 8px;
-}
-
-
-/* =================================
-   FINISH
-================================= */
-
+#startScreen,
 #finishScreen {
     position: absolute;
 
     inset: 0;
 
-    background: rgba(0,0,0,0.45);
+    display: flex;
 
-    display: none;
-
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
-    z-index: 3000;
+    background:
+        rgba(0, 0, 0, 0.35);
+
+    z-index: 500;
 }
 
 
-#finishBox {
-    width: 500px;
+/* ========================================
+   START / FINISH CARDS
+======================================== */
+
+.startCard,
+.finishCard {
+    width: 760px;
+
+    max-height: 900px;
+
+    padding: 45px;
+
+    background: white;
+
+    border-radius: 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.3);
+
+    overflow-y: auto;
+}
+
+.startCard h1,
+.finishCard h1 {
+    font-size: 48px;
+
+    margin: 10px 0 15px;
+}
+
+.startCard p,
+.finishCard p {
+    font-size: 25px;
+
+    line-height: 1.4;
+}
+
+.smallInstruction {
+    font-size: 20px !important;
+}
+
+
+/* ========================================
+   BIG ICON
+======================================== */
+
+.bigIcon {
+    font-size: 80px;
+}
+
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+button {
+    border: none;
+
+    border-radius: 18px;
+
+    padding: 18px 35px;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    background: #4caf50;
+
+    color: white;
+
+    box-shadow:
+        0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+button:disabled {
+    opacity: 0.4;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+#playAgainButton {
+    margin-top: 25px;
+    background: #4caf50;
+}
+
+
+/* ========================================
+   RESULT POPUPS
+======================================== */
+
+#resultMessage,
+#interestMessage {
+    position: absolute;
+
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    background:
+        rgba(0, 0, 0, 0.25);
+
+    z-index: 600;
+}
+
+
+.resultCard {
+    width: 550px;
 
     padding: 40px;
 
@@ -511,40 +652,139 @@ body {
     border-radius: 30px;
 
     text-align: center;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.3);
+
+    font-size: 30px;
 }
 
+#resultIcon {
+    font-size: 75px;
 
-#finishBox h1 {
-    font-size: 40px;
+    margin-bottom: 15px;
 }
 
-
-#finalSavings {
-    font-size: 65px;
+#resultText {
+    font-size: 32px;
 
     font-weight: bold;
-
-    margin: 20px;
 }
 
 
-#finalMessage {
-    font-size: 20px;
+/* ========================================
+   FINAL MONEY
+======================================== */
+
+.finalMoney {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 50px;
+
+    margin: 20px 0;
+
+    font-size: 25px;
+
+    font-weight: bold;
+}
+
+.finalMoney strong {
+    display: block;
+
+    font-size: 32px;
+
+    margin-top: 5px;
 }
 
 
-#finishBox button {
-    border: none;
+/* ========================================
+   PRIZES
+======================================== */
 
-    background: #4caf50;
+#prizes {
+    display: grid;
 
-    color: white;
+    grid-template-columns:
+        repeat(2, 1fr);
 
-    padding: 15px 30px;
+    gap: 18px;
 
-    border-radius: 15px;
-
-    font-size: 20px;
-
-    cursor: pointer;
+    margin-top: 25px;
 }
+
+
+.prize {
+    padding: 20px;
+
+    min-height: 130px;
+
+    background: #f7f7f7;
+
+    color: #222;
+
+    border: 3px solid #ddd;
+
+    border-radius: 20px;
+
+    box-shadow: none;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+}
+
+
+.prize strong {
+    display: block;
+
+    font-size: 23px;
+}
+
+
+.prize span {
+    font-size: 18px;
+}
+
+
+/* ========================================
+   PRIZE RESULT
+======================================== */
+
+#prizeResult {
+    margin-top: 20px;
+
+    font-size: 24px;
+
+    font-weight: bold;
+}
+
+
+/* ========================================
+   RESPONSIVE SCALING
+======================================== */
+
+@media (max-width: 1920px), (max-height: 1080px) {
+
+    #game {
+        transform:
+            translate(-50%, -50%)
+            scale(
+                min(
+                    calc(100vw / 1920),
+                    calc(100vh / 1080)
+                )
+            );
+    }
+}
+
+/* ========================================
+   FINAL DECISION CARD POSITION FIX
+======================================== */

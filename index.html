@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,250 +10,270 @@
 
 <body>
 
-<div id="game">
+    <div id="game">
 
-    <!-- HUD -->
-    <div id="hud">
-        <div>💵 Money: $<span id="money">10</span></div>
-        <div>🎯 Saved: $<span id="savings">0</span></div>
-        <div>🛴 Driver Decides</div>
-    </div>
+        <!-- ================= HUD ================= -->
+
+        <div id="hud">
+
+            <div class="moneyBox">
+                💵 Wallet
+                <span>$<span id="wallet">20</span></span>
+            </div>
+
+            <div class="moneyBox spentBox">
+                💸 Spent
+                <span>$<span id="spent">0</span></span>
+            </div>
+
+            <div class="moneyBox savingsBox">
+                🐷 Bank
+                <span>$<span id="savings">0</span></span>
+            </div>
+
+            <div id="itemsBox">
+                🎒 Items
+                <div id="items">
+                    <span style="opacity:.35;">None yet</span>
+                </div>
+            </div>
+
+        </div>
 
 
-    <!-- =================================
-         SCROLLING WORLD
-    ================================== -->
+        <!-- ================= WORLD ================= -->
 
-    <div id="world">
+        <div id="sky"></div>
+        <div id="grass"></div>
 
-        <!-- Park decorations -->
+        <div id="road">
+
+            <div class="roadLine line1"></div>
+            <div class="roadLine line2"></div>
+            <div class="roadLine line3"></div>
+            <div class="roadLine line4"></div>
+            <div class="roadLine line5"></div>
+
+            <!-- Upper branch -->
+            <div class="branchRoad upperBranch"></div>
+
+            <!-- Lower branch -->
+            <div class="branchRoad lowerBranch"></div>
+
+        </div>
+
+
+        <!-- ================= SCENERY ================= -->
 
         <div class="tree tree1">🌳</div>
         <div class="tree tree2">🌳</div>
-        <div class="tree tree3">🌲</div>
+        <div class="tree tree3">🌳</div>
         <div class="tree tree4">🌳</div>
         <div class="tree tree5">🌳</div>
-        <div class="tree tree6">🌲</div>
-
-        <div class="cloud cloud1">☁️</div>
-        <div class="cloud cloud2">☁️</div>
 
 
-        <!-- =================================
-             ROAD
-        ================================== -->
+        <!-- ================= DECISION ================= -->
 
-        <svg id="roadSvg"
-             viewBox="0 0 1000 1800"
-             preserveAspectRatio="none">
+        <div id="decision">
 
-            <!-- Main trail -->
+            <div id="spendChoice" class="choice spendChoice">
 
-            <path
-                id="mainTrail"
-                d="M 500 1800 L 500 850"
-            />
+                <div id="spendIcon">🎢</div>
 
-            <!-- LEFT / SPEND -->
-
-            <path
-                id="spendTrail"
-                d="
-                    M 500 850
-                    C 500 650 390 580 250 400
-                    C 190 325 170 200 150 0
-                "
-            />
-
-            <!-- RIGHT / SAVE -->
-
-            <path
-                id="saveTrail"
-                d="
-                    M 500 850
-                    C 500 650 610 580 750 400
-                    C 810 325 830 200 850 0
-                "
-            />
-
-        </svg>
-
-
-        <!-- =================================
-             SPEND OPTION
-        ================================== -->
-
-        <div id="spendChoice" class="choice">
-
-            <div class="choiceIcon">🍦</div>
-
-            <div class="choiceTitle">
-                SPEND
-            </div>
-
-            <div class="choiceSub">
-                Ice Cream
-            </div>
-
-            <div class="choicePrice">
-                $2
-            </div>
-
-        </div>
-
-
-        <!-- =================================
-             SAVE OPTION
-        ================================== -->
-
-        <div id="saveChoice" class="choice">
-
-            <div class="choiceIcon">💰</div>
-
-            <div class="choiceTitle">
-                SAVE
-            </div>
-
-            <div class="choiceSub">
-                Save it
-            </div>
-
-            <div class="choicePrice">
-                $2
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =================================
-         SCOOTER
-         IMPORTANT:
-         This is OUTSIDE the scrolling world.
-    ================================== -->
-
-    <div id="scooter">
-        🛴
-    </div>
-
-
-    <!-- =================================
-         INSTRUCTIONS
-    ================================== -->
-
-    <div id="controlText">
-        Drag the scooter left or right
-    </div>
-
-
-    <!-- =================================
-         START SCREEN
-    ================================== -->
-
-    <div id="startScreen">
-
-        <div id="startBox">
-
-            <div class="bigScooter">
-                🛴
-            </div>
-
-            <h1>
-                Driver Decides!
-            </h1>
-
-            <p>
-                Ride through the park and decide
-                when to spend and when to save.
-            </p>
-
-            <div class="howToPlay">
-
-                <div>
-                    🖱️
-                    <strong>Drag</strong>
+                <div class="choiceTitle">
+                    SPEND
                 </div>
 
-                <div>
-                    🍦
-                    <strong>Spend</strong>
+                <div id="spendName">
+                    Theme Park Ticket
                 </div>
 
-                <div>
-                    💰
-                    <strong>Save</strong>
+                <div id="spendCost">
+                    $5
                 </div>
 
             </div>
 
-            <div class="startMoney">
-                💵 You have $10
+
+            <div id="saveChoice" class="choice saveChoice">
+
+                <div class="savePig">
+                    🐷
+                </div>
+
+                <div class="choiceTitle">
+                    SAVE
+                </div>
+
+                <div class="saveText">
+                    Add to your<br>
+                    Piggy Bank
+                </div>
+
             </div>
 
-            <button id="startButton">
-                BEGIN RIDE
-            </button>
+        </div>
+
+
+        <!-- ================= SCOOTER ================= -->
+
+        <div id="scooter">
+            🛴
+        </div>
+
+
+        <!-- ================= INSTRUCTIONS ================= -->
+
+        <div id="instructions">
+            Ride toward the next decision!
+        </div>
+
+
+        <!-- ================= START SCREEN ================= -->
+
+        <div id="startScreen">
+
+            <div class="startCard">
+
+                <div class="bigIcon">🛴</div>
+
+                <h1>Driver Decides</h1>
+
+                <p>
+                    Ride your scooter and make smart money choices!
+                </p>
+
+                <p class="smallInstruction">
+                    When you reach a decision,<br>
+                    drag your scooter UP or DOWN<br>
+                    to choose.
+                </p>
+
+                <button id="startButton">
+                    START RIDING
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= RESULT ================= -->
+
+        <div id="resultMessage">
+
+            <div class="resultCard">
+
+                <div id="resultIcon">
+                    🎉
+                </div>
+
+                <div id="resultText">
+                    Great choice!
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= INTEREST ================= -->
+
+        <div id="interestMessage">
+
+            <div class="resultCard">
+
+                <div>
+                    🐷
+                </div>
+
+                <div>
+                    Your savings earned
+                    <strong>$1!</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= FINISH ================= -->
+
+        <div id="finishScreen">
+
+            <div class="finishCard">
+
+                <div class="bigIcon">
+                    🐷
+                </div>
+
+                <h1>
+                    Great Job!
+                </h1>
+
+                <p>
+                    You finished your ride!
+                </p>
+
+                <div class="finalMoney">
+
+                    <div>
+                        Piggy Bank
+                        <strong id="finalSavings">$0</strong>
+                    </div>
+
+                    <div>
+                        Interest Earned
+                        <strong id="finalInterest">$0</strong>
+                    </div>
+
+                </div>
+
+                <h2>
+                    Choose your big prize!
+                </h2>
+
+                <div id="prizes">
+
+                    <button class="prize" data-cost="5">
+                        🎮
+                        <strong>Small Game</strong>
+                        <span>$5</span>
+                    </button>
+
+                    <button class="prize" data-cost="8">
+                        🎨
+                        <strong>Art Set</strong>
+                        <span>$8</span>
+                    </button>
+
+                    <button class="prize" data-cost="10">
+                        ⚽
+                        <strong>New Soccer Ball</strong>
+                        <span>$10</span>
+                    </button>
+
+                    <button class="prize" data-cost="15">
+                        🚲
+                        <strong>New Bike</strong>
+                        <span>$15</span>
+                    </button>
+
+                </div>
+
+                <div id="prizeResult"></div>
+
+                <button id="playAgainButton">
+                    🔄 PLAY AGAIN
+                </button>
+            </div>
 
         </div>
 
     </div>
 
-
-    <!-- =================================
-         RESULT
-    ================================== -->
-
-    <div id="resultMessage">
-
-        <div id="resultBox">
-
-            <div id="resultIcon">
-                🍦
-            </div>
-
-            <div id="resultText">
-                You spent $2!
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =================================
-         FINISH
-    ================================== -->
-
-    <div id="finishScreen">
-
-        <div id="finishBox">
-
-            <h1>
-                🎉 Great Ride!
-            </h1>
-
-            <p>
-                You saved:
-            </p>
-
-            <div id="finalSavings">
-                $0
-            </div>
-
-            <p id="finalMessage"></p>
-
-            <button onclick="location.reload()">
-                RIDE AGAIN
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<script src="game.js"></script>
+    <script src="game.js"></script>
 
 </body>
+
 </html>
