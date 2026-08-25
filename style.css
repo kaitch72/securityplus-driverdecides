@@ -1,3 +1,24 @@
+/* ========================================
+   SECURITYPLUS BRAND TOKENS
+   Sourced from "A Guide to Our Brand"
+======================================== */
+
+:root {
+
+    --blue-black:   #0A1724;
+    --persian-blue: #1943DC;
+    --blue-bird:    #258BFF;
+    --malibu:       #59D2FE;
+    --sky-blue:     #8BD1FF;
+    --onahau:       #CFF1F9;
+    --hawkes-blue:  #D7E7FF;
+    --magnolia:     #FBF5FE;
+    --mystic:       #E6ECEB;
+    --white:        #FFFFFF;
+
+    --font-brand: "Inter", Arial, Helvetica, sans-serif;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -9,11 +30,11 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-brand);
 }
 
 body {
-    background: #9ed8ef;
+    background: var(--hawkes-blue);
 }
 
 #game {
@@ -21,7 +42,42 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background: #9ed8ef;
+    background: var(--hawkes-blue);
+}
+
+
+/* ================= TOP BAR ================= */
+
+#topBar {
+    position: absolute;
+    z-index: 35;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 62px;
+
+    background: var(--white);
+    border-bottom: 3px solid var(--hawkes-blue);
+    box-shadow: 0 4px 14px rgba(10, 23, 36, 0.08);
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 20px;
+}
+
+.brand-logo {
+    height: 30px;
+    width: auto;
+    display: block;
+}
+
+#gameTitle {
+    font-size: clamp(18px, 2vw, 26px);
+    font-weight: 800;
+    color: var(--blue-black);
+    line-height: 1;
+    white-space: nowrap;
 }
 
 
@@ -30,7 +86,7 @@ body {
 #sky {
     position: absolute;
     inset: 0 0 58% 0;
-    background: #a8daf0;
+    background: linear-gradient(180deg, var(--sky-blue) 0%, var(--onahau) 100%);
 }
 
 #grass {
@@ -39,7 +95,7 @@ body {
     right: 0;
     top: 34%;
     bottom: 0;
-    background: #acd996;
+    background: #a9dba0;
 }
 
 #road {
@@ -48,16 +104,16 @@ body {
     right: 0;
     top: 43%;
     height: 36%;
-    background: #777;
-    border-top: 7px solid #666;
-    border-bottom: 7px solid #666;
+    background: var(--blue-black);
+    border-top: 7px solid var(--persian-blue);
+    border-bottom: 7px solid var(--persian-blue);
 }
 
 .roadLine {
     position: absolute;
     width: 8%;
     height: 10px;
-    background: white;
+    background: var(--malibu);
     border-radius: 10px;
     top: 50%;
     transform: translateY(-50%);
@@ -123,7 +179,7 @@ body {
 #hud {
     position: absolute;
     z-index: 30;
-    top: 12px;
+    top: 76px;
     left: 12px;
     right: 12px;
 
@@ -135,35 +191,60 @@ body {
 .moneyBox,
 #itemsBox,
 #goalBox {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
+    background: var(--white);
+    border-radius: 16px;
     padding: 12px 18px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 5px 10px rgba(10, 23, 36, 0.14);
     font-weight: bold;
+}
+
+.statLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: clamp(12px, 1vw, 15px);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--persian-blue);
+}
+
+.icon-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1em;
+    line-height: 1;
+}
+
+.mini-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--persian-blue);
+    flex-shrink: 0;
+}
+
+.statValue {
+    display: block;
+    margin-top: 5px;
+    font-size: clamp(20px, 2vw, 32px);
+    color: var(--blue-black);
 }
 
 .moneyBox {
     min-width: 130px;
-    font-size: clamp(15px, 1.4vw, 24px);
-}
-
-.moneyBox span {
-    display: block;
-    margin-top: 5px;
-    font-size: clamp(20px, 2vw, 32px);
 }
 
 .spentBox {
-    background: #fff4e8;
+    background: var(--magnolia);
 }
 
 .savingsBox {
-    background: #fffbe5;
+    background: var(--onahau);
 }
 
 #itemsBox {
     min-width: 240px;
-    font-size: clamp(15px, 1.4vw, 24px);
 }
 
 #items {
@@ -179,34 +260,50 @@ body {
     margin-left: auto;
     width: min(30vw, 450px);
     min-width: 260px;
+    background: var(--white);
 }
 
 #goalTitle {
-    font-size: clamp(14px, 1.3vw, 22px);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: clamp(12px, 1vw, 15px);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--persian-blue);
     margin-bottom: 8px;
+}
+
+#goalTitle strong {
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--blue-black);
+    font-size: clamp(14px, 1.3vw, 19px);
 }
 
 #progressTrack {
     width: 100%;
-    height: 20px;
-    background: #e4e4e4;
+    height: 18px;
+    background: var(--hawkes-blue);
     border-radius: 20px;
     overflow: hidden;
 }
 
-#progressBar {
+#goalProgressFill {
     width: 0%;
     height: 100%;
-    background: #79b86c;
+    background: linear-gradient(90deg, var(--persian-blue), var(--blue-bird));
     border-radius: 20px;
     transition: width 0.4s ease;
 }
 
-#progressText {
+#goalProgressText {
     text-align: center;
     margin-top: 5px;
     font-weight: bold;
     font-size: clamp(13px, 1.2vw, 18px);
+    color: var(--blue-black);
 }
 
 
@@ -228,11 +325,11 @@ body {
     width: 300px;
     height: 190px;
 
-    background: white;
-    border: 5px solid #444;
-    border-radius: 22px;
+    background: var(--white);
+    border: 4px solid var(--persian-blue);
+    border-radius: 24px;
 
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 8px 18px rgba(10, 23, 36, 0.22);
 
     display: flex;
     flex-direction: column;
@@ -240,6 +337,10 @@ body {
     justify-content: center;
 
     text-align: center;
+}
+
+.saveChoice {
+    background: var(--onahau);
 }
 
 .spendChoice {
@@ -251,33 +352,57 @@ body {
 }
 
 .choiceTitle {
-    font-size: clamp(22px, 2vw, 34px);
-    font-weight: 900;
-    margin-top: 6px;
+    font-size: clamp(20px, 1.8vw, 30px);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--persian-blue);
+    margin-top: 8px;
 }
 
-#spendIcon,
-.savePig {
-    font-size: clamp(35px, 4vw, 55px);
+.choiceIconBadge {
+    width: clamp(48px, 5vw, 66px);
+    height: clamp(48px, 5vw, 66px);
+    border-radius: 50%;
+    background: var(--onahau);
+    border: 3px solid var(--persian-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(24px, 2.6vw, 34px);
+    box-shadow: 0 4px 0 var(--hawkes-blue);
+}
+
+.choiceIconBadge--save {
+    background: var(--white);
+}
+
+.choiceIconBadge .mini-icon,
+.choiceIconBadge--save .mini-icon {
+    width: 60%;
+    height: 60%;
+    fill: var(--persian-blue);
 }
 
 #spendName {
-    font-size: clamp(17px, 1.7vw, 26px);
-    font-weight: bold;
-    margin-top: 5px;
+    font-size: clamp(16px, 1.6vw, 24px);
+    font-weight: 700;
+    color: var(--blue-black);
+    margin-top: 6px;
 }
 
 #spendCost {
-    font-size: clamp(24px, 2.3vw, 36px);
-    font-weight: 900;
-    margin-top: 5px;
+    font-size: clamp(22px, 2.1vw, 32px);
+    font-weight: 800;
+    color: var(--blue-black);
+    margin-top: 4px;
 }
 
 .saveText {
-    font-size: clamp(16px, 1.5vw, 23px);
-    font-weight: bold;
-    line-height: 1.2;
-    margin-top: 6px;
+    font-size: clamp(15px, 1.4vw, 21px);
+    font-weight: 700;
+    color: var(--blue-black);
+    line-height: 1.25;
+    margin-top: 8px;
 }
 
 
@@ -292,13 +417,32 @@ body {
 
     transform: translate(-50%, -50%);
 
-    font-size: clamp(42px, 5vw, 75px);
+    width: clamp(60px, 6vw, 92px);
+    height: clamp(60px, 6vw, 92px);
+
+    border-radius: 50%;
+    background: var(--white);
+    border: 4px solid var(--persian-blue);
+    box-shadow: 0 6px 0 var(--hawkes-blue), 0 8px 14px rgba(10, 23, 36, 0.2);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     cursor: grab;
     user-select: none;
     touch-action: none;
+}
 
-    filter: drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.25));
+.scooter-icon {
+    width: 58%;
+    height: 58%;
+    fill: var(--persian-blue);
+    pointer-events: none;
+}
+
+#scooter:active {
+    cursor: grabbing;
 }
 
 
@@ -312,14 +456,15 @@ body {
     bottom: 20px;
     transform: translateX(-50%);
 
-    background: white;
+    background: var(--white);
     border-radius: 30px;
     padding: 13px 28px;
 
     font-size: clamp(15px, 1.6vw, 25px);
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--blue-black);
 
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 12px rgba(10, 23, 36, 0.18);
 
     white-space: nowrap;
 }
@@ -340,53 +485,178 @@ body {
     align-items: center;
     justify-content: center;
 
-    background: rgba(0, 0, 0, 0.48);
+    background: rgba(10, 23, 36, 0.55);
 }
 
 #startScreen {
     display: flex;
 }
 
-.startCard,
-.finishCard {
+.startCard {
     width: min(900px, 90vw);
     max-height: 94vh;
     overflow-y: auto;
 
-    background: white;
+    background: var(--white);
     border-radius: 35px;
 
     padding: 45px;
 
     text-align: center;
 
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 30px rgba(10, 23, 36, 0.3);
+}
+
+.finishCard {
+    position: relative;
+    overflow: hidden;
+
+    width: min(900px, 90vw);
+    max-height: 94vh;
+    overflow-y: auto;
+
+    background: linear-gradient(160deg, var(--blue-black) 0%, var(--persian-blue) 100%);
+    color: var(--white);
+    border-radius: 35px;
+
+    padding: 45px;
+
+    text-align: center;
+
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.finishCard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("images/brand-arrow-tile.png");
+    background-repeat: repeat;
+    background-size: 84px 84px;
+}
+
+.finishCard > * {
+    position: relative;
 }
 
 .bigIcon {
     font-size: clamp(50px, 6vw, 90px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.startCard h1,
-.finishCard h1 {
-    font-size: clamp(42px, 5vw, 76px);
+.big-icon-svg {
+    width: clamp(50px, 6vw, 90px);
+    height: clamp(50px, 6vw, 90px);
+    fill: var(--persian-blue);
+}
+
+.startCard h1 {
+    font-size: clamp(38px, 4.6vw, 68px);
+    font-weight: 800;
+    color: var(--blue-black);
     margin: 10px 0 20px;
 }
 
-.startCard h2,
-.finishCard h2 {
-    font-size: clamp(25px, 3vw, 42px);
+.finishCard h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    font-size: clamp(34px, 4vw, 52px);
+    font-weight: 800;
+    color: var(--white);
+    margin: 0 0 12px;
+}
+
+.trophy-icon {
+    width: 40px;
+    height: 40px;
+    fill: var(--malibu);
+    flex-shrink: 0;
+}
+
+.heading-icon {
+    width: 0.85em;
+    height: 0.85em;
+    fill: var(--persian-blue);
+    flex-shrink: 0;
+}
+
+.heading-icon--onDark {
+    fill: var(--malibu);
+}
+
+.startCard h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: clamp(23px, 2.6vw, 36px);
+    font-weight: 800;
+    color: var(--blue-black);
     margin-top: 35px;
 }
 
-.startCard p,
-.finishCard p {
-    font-size: clamp(17px, 1.8vw, 27px);
+.finishCard h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: clamp(21px, 2.3vw, 30px);
+    font-weight: 800;
+    color: var(--white);
+    margin-top: 30px;
+}
+
+.startCard p {
+    font-size: clamp(16px, 1.6vw, 23px);
+    font-weight: 400;
+    color: var(--blue-black);
+    line-height: 1.35;
+}
+
+.results-message {
+    font-size: clamp(17px, 1.8vw, 24px);
+    font-weight: 500;
+    color: var(--hawkes-blue);
     line-height: 1.35;
 }
 
 .introLead {
     margin-bottom: 30px;
+}
+
+
+/* ================= RESULTS SPARKLES ================= */
+
+.results-sparkles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 6px;
+}
+
+.sparkle-icon {
+    width: 20px;
+    height: 20px;
+    fill: var(--malibu);
+}
+
+.sparkle-icon--big {
+    width: 26px;
+    height: 26px;
+}
+
+.sparkle-icon--inline {
+    width: 15px;
+    height: 15px;
+    fill: var(--malibu);
+    vertical-align: -2px;
 }
 
 
@@ -403,15 +673,17 @@ body {
 .goalPrize {
     min-height: 105px;
 
-    border: 5px solid #ddd;
+    border: 4px solid var(--hawkes-blue);
     border-radius: 20px;
 
-    background: #fff;
+    background: var(--white);
 
     cursor: pointer;
 
+    font-family: var(--font-brand);
     font-size: clamp(18px, 2vw, 28px);
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--blue-black);
 
     display: flex;
     align-items: center;
@@ -423,7 +695,7 @@ body {
         border-color 0.15s ease,
         background 0.15s ease;
 
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 10px rgba(10, 23, 36, 0.08);
 }
 
 .goalPrize:hover {
@@ -431,70 +703,106 @@ body {
 }
 
 .goalPrize.selected {
-    border-color: #72b765;
-    background: #f1faee;
+    border-color: var(--persian-blue);
+    background: var(--onahau);
 }
 
 .goalPrize span {
-    font-weight: normal;
+    font-weight: 400;
+    color: var(--persian-blue);
 }
 
 #goalSelectionMessage {
     min-height: 30px;
     margin: 12px 0;
-    font-size: clamp(17px, 1.7vw, 24px);
-    font-weight: bold;
+    font-size: clamp(16px, 1.6vw, 22px);
+    font-weight: 700;
+    color: var(--persian-blue);
 }
 
 
 /* ================= BUTTONS ================= */
 
-#startButton,
-#playAgainButton {
+.brandButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
     border: none;
     border-radius: 18px;
 
     padding: 18px 42px;
 
-    background: #83bd72;
-    color: white;
+    background: var(--persian-blue);
+    color: var(--white);
 
-    font-size: clamp(22px, 2.4vw, 34px);
-    font-weight: 900;
+    font-family: var(--font-brand);
+    font-size: clamp(20px, 2.2vw, 30px);
+    font-weight: 800;
 
     cursor: pointer;
 
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 6px 0 var(--hawkes-blue);
 
     transition:
         transform 0.15s ease,
         opacity 0.15s ease;
 }
 
-#startButton:hover:not(:disabled),
-#playAgainButton:hover {
+.brandButton:hover:not(:disabled) {
     transform: translateY(-3px);
 }
 
-#startButton:disabled {
-    opacity: 0.45;
+.brandButton:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 var(--hawkes-blue);
+}
+
+.brandButton:disabled {
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
+.button-icon {
+    width: 0.85em;
+    height: 0.85em;
+    fill: var(--white);
+    flex-shrink: 0;
+}
 
-/* ================= RESULT ================= */
+.brandButton--onDark {
+    background: var(--white);
+    color: var(--persian-blue);
+    box-shadow: 0 6px 0 rgba(255, 255, 255, 0.25);
+}
+
+.brandButton--onDark:hover {
+    background: var(--onahau);
+}
+
+.replay-icon {
+    width: 22px;
+    height: 22px;
+    fill: var(--persian-blue);
+    flex-shrink: 0;
+}
+
+
+/* ================= RESULT / BONUS TOASTS ================= */
 
 .resultCard {
-    background: white;
+    background: var(--white);
     border-radius: 25px;
     padding: 30px 45px;
 
     text-align: center;
 
     font-size: clamp(20px, 2vw, 32px);
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--blue-black);
 
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 20px rgba(10, 23, 36, 0.3);
 }
 
 #resultIcon {
@@ -506,11 +814,12 @@ body {
 /* ================= FINISH ================= */
 
 #goalCompleteMessage {
-    background: #eef9e9;
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 15px;
     padding: 15px;
-    font-size: clamp(19px, 2vw, 28px);
-    font-weight: bold;
+    font-size: clamp(18px, 1.9vw, 26px);
+    font-weight: 700;
+    color: var(--malibu);
     margin: 20px 0;
 }
 
@@ -526,9 +835,19 @@ body {
     font-size: clamp(18px, 1.8vw, 26px);
 }
 
+.finalMoney .statLabel {
+    color: var(--sky-blue);
+    justify-content: center;
+}
+
+.finalMoney .statLabel .mini-icon {
+    fill: var(--sky-blue);
+}
+
 .finalMoney strong {
     display: block;
     font-size: clamp(28px, 3vw, 42px);
+    color: var(--white);
     margin-top: 5px;
 }
 
@@ -549,9 +868,11 @@ body {
 
     width: min(400px, 80%);
 
-    border: 4px solid #ddd;
+    border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 20px;
     padding: 18px;
+
+    background: rgba(255, 255, 255, 0.08);
 
     display: flex;
     justify-content: center;
@@ -559,20 +880,40 @@ body {
     gap: 12px;
 
     font-size: clamp(18px, 2vw, 28px);
+    color: var(--white);
 }
 
 #finalPrizeIcon {
-    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.finalPrize-icon {
+    width: 40px;
+    height: 40px;
+    fill: var(--malibu);
+    flex-shrink: 0;
 }
 
 #finalPrize span {
-    font-weight: normal;
+    font-weight: 400;
+    color: var(--sky-blue);
 }
 
 #prizeResult {
     min-height: 30px;
     margin: 10px 0 20px;
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--malibu);
+}
+
+.results-footer {
+    margin-top: 22px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: var(--sky-blue);
 }
 
 
@@ -580,7 +921,18 @@ body {
 
 @media (max-width: 900px) {
 
+    #topBar {
+        height: 52px;
+        gap: 10px;
+        padding: 0 12px;
+    }
+
+    .brand-logo {
+        height: 22px;
+    }
+
     #hud {
+        top: 62px;
         gap: 7px;
     }
 
@@ -619,6 +971,10 @@ body {
 }
 
 @media (max-width: 650px) {
+
+    #gameTitle {
+        display: none;
+    }
 
     #goalChoices {
         grid-template-columns: 1fr;

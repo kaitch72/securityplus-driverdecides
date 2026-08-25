@@ -377,12 +377,18 @@ function selectGoal(goal) {
     updateGoalProgress();
 
     const message =
-        document.getElementById("goalMessage");
+        document.getElementById("goalSelectionMessage");
 
     if (message) {
 
         message.textContent =
-            `🎯 Your goal: ${goal.icon} ${goal.name} — save $${goal.cost}!`;
+            `Your goal: ${goal.icon} ${goal.name} — save $${goal.cost}!`;
+
+    }
+
+    if (startButton) {
+
+        startButton.disabled = false;
 
     }
 
