@@ -307,102 +307,168 @@ body {
 }
 
 
-/* ================= DECISION ================= */
+/* ================= OBSTACLES (save / spend icons) ================= */
 
-#decision {
+#obstacles {
     position: absolute;
-    z-index: 10;
-    left: -600px;
-    top: 0;
-    width: 300px;
-    height: 100%;
+    inset: 0;
+    z-index: 12;
     pointer-events: none;
+    overflow: hidden;
 }
 
-.choice {
+.obstacle {
     position: absolute;
-    left: 0;
-    width: 300px;
-    height: 190px;
+    transform: translate(-50%, -50%);
 
-    background: var(--white);
-    border: 4px solid var(--persian-blue);
-    border-radius: 24px;
+    width: clamp(52px, 5.5vw, 78px);
+    height: clamp(52px, 5.5vw, 78px);
 
-    box-shadow: 0 8px 18px rgba(10, 23, 36, 0.22);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;
-}
-
-.saveChoice {
-    background: var(--onahau);
-}
-
-.spendChoice {
-    top: 37%;
-}
-
-.saveChoice {
-    top: 64%;
-}
-
-.choiceTitle {
-    font-size: clamp(20px, 1.8vw, 30px);
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    color: var(--persian-blue);
-    margin-top: 8px;
-}
-
-.choiceIconBadge {
-    width: clamp(48px, 5vw, 66px);
-    height: clamp(48px, 5vw, 66px);
     border-radius: 50%;
-    background: var(--onahau);
-    border: 3px solid var(--persian-blue);
+    background: var(--white);
+
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(24px, 2.6vw, 34px);
-    box-shadow: 0 4px 0 var(--hawkes-blue);
+
+    box-shadow: 0 5px 10px rgba(10, 23, 36, 0.22);
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.choiceIconBadge--save {
-    background: var(--white);
+/* Two-tone brand-blue borders (2026-08-26, color-differentiation pass) -
+   Kayla wanted the obstacles told apart by color again after the neutral
+   single-blue pass, but without going back to a green/red good-vs-bad code:
+   save gets the bright/primary blue, spend gets a lighter blue. Same two
+   tones carry through to the price tag and catch toast below so the
+   save/spend distinction reads consistently everywhere. */
+.obstacle--save {
+    border: 4px solid var(--persian-blue);
 }
 
-.choiceIconBadge .mini-icon,
-.choiceIconBadge--save .mini-icon {
-    width: 60%;
-    height: 60%;
+.obstacle--spend {
+    border: 4px solid var(--sky-blue);
+}
+
+.obstacle-icon {
+    width: 58%;
+    height: 58%;
     fill: var(--persian-blue);
 }
 
-#spendName {
-    font-size: clamp(16px, 1.6vw, 24px);
-    font-weight: 700;
-    color: var(--blue-black);
-    margin-top: 6px;
-}
+/* Price tag shown on every obstacle as it travels (2026-08-26, pricing
+   pass) - save is always a fixed amount, spend varies per item, so a kid
+   can see the cost before deciding whether to steer into it. A +/- prefix
+   (added in the color-differentiation pass) matches the catch toast's
+   wording so the sign reads the same everywhere. Background matches each
+   type's border color; text color flips to Blue Black on the lighter spend
+   tag since white doesn't have enough contrast on Sky Blue. */
+.obstacle-price {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
 
-#spendCost {
-    font-size: clamp(22px, 2.1vw, 32px);
+    font-family: var(--font-brand);
     font-weight: 800;
-    color: var(--blue-black);
-    margin-top: 4px;
+    font-size: clamp(11px, 1.1vw, 14px);
+    line-height: 1;
+    white-space: nowrap;
+
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 2px solid var(--white);
+    box-shadow: 0 2px 4px rgba(10, 23, 36, 0.25);
 }
 
-.saveText {
-    font-size: clamp(15px, 1.4vw, 21px);
-    font-weight: 700;
+.obstacle--save .obstacle-price {
+    background: var(--persian-blue);
+    color: var(--white);
+}
+
+.obstacle--spend .obstacle-price {
+    background: var(--sky-blue);
     color: var(--blue-black);
-    line-height: 1.25;
-    margin-top: 8px;
+}
+
+.obstacle--caught {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.4);
+}
+
+.sparkle {
+    position: absolute;
+    z-index: 21;
+    pointer-events: none;
+
+    width: clamp(14px, 1.6vw, 22px);
+    height: clamp(14px, 1.6vw, 22px);
+
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+
+    animation: sparklePop 700ms ease-out forwards;
+}
+
+.sparkle svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes sparklePop {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
+    25% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, 0px))) scale(1.15);
+    }
+}
+
+.catchToast {
+    position: absolute;
+    z-index: 20;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+
+    font-family: var(--font-brand);
+    font-weight: 800;
+    font-size: clamp(16px, 1.8vw, 24px);
+    white-space: nowrap;
+
+    animation: floatUpFade 0.9s ease forwards;
+}
+
+/* Brand blues (2026-08-26) - was green/red, which read as "saving = good,
+   spending = bad." These toasts float over the dark road (#road is
+   var(--blue-black)), so per the dark-surface icon rule under Iconography,
+   the on-light Persian Blue/Sky Blue pair from the obstacle border swaps to
+   its dark-surface equivalent here: Malibu stands in for Persian Blue
+   (both read as the "bright/save" tone) and Sky Blue carries over as-is,
+   since it already has strong contrast against the dark road. Plain
+   Persian Blue text measured only ~2.5:1 contrast against the road color -
+   too low to read reliably at a glance. */
+.toast--save {
+    color: var(--malibu);
+}
+
+.toast--spend {
+    color: var(--sky-blue);
+}
+
+@keyframes floatUpFade {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -170%);
+    }
 }
 
 
@@ -473,9 +539,7 @@ body {
 /* ================= OVERLAYS ================= */
 
 #startScreen,
-#finishScreen,
-#resultMessage,
-#interestMessage {
+#finishScreen {
     position: absolute;
     z-index: 100;
 
@@ -660,17 +724,17 @@ body {
 }
 
 
-/* ================= GOAL CHOICES ================= */
+/* ================= LEVEL PREVIEW (start screen) ================= */
 
-#goalChoices {
+#levelPreview {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 14px;
-    margin: 25px auto 10px;
+    margin: 25px auto 20px;
     max-width: 700px;
 }
 
-.goalPrize {
+.levelPreviewCard {
     min-height: 105px;
 
     border: 4px solid var(--hawkes-blue);
@@ -678,46 +742,50 @@ body {
 
     background: var(--white);
 
-    cursor: pointer;
-
     font-family: var(--font-brand);
-    font-size: clamp(18px, 2vw, 28px);
-    font-weight: 700;
     color: var(--blue-black);
 
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-
-    transition:
-        transform 0.15s ease,
-        border-color 0.15s ease,
-        background 0.15s ease;
+    gap: 4px;
+    padding: 10px;
 
     box-shadow: 0 5px 10px rgba(10, 23, 36, 0.08);
 }
 
-.goalPrize:hover {
-    transform: translateY(-3px);
+.levelPreviewCard .roundTag {
+    font-size: clamp(11px, 1vw, 13px);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--persian-blue);
 }
 
-.goalPrize.selected {
-    border-color: var(--persian-blue);
-    background: var(--onahau);
+.levelPreviewCard .levelIcon {
+    font-size: clamp(22px, 2.4vw, 30px);
 }
 
-.goalPrize span {
+.levelPreviewCard strong {
+    font-size: clamp(15px, 1.6vw, 20px);
+}
+
+.levelPreviewCard .levelCost {
     font-weight: 400;
     color: var(--persian-blue);
 }
 
-#goalSelectionMessage {
-    min-height: 30px;
-    margin: 12px 0;
-    font-size: clamp(16px, 1.6vw, 22px);
-    font-weight: 700;
-    color: var(--persian-blue);
+
+/* ================= ROUND LABEL (finish screen) ================= */
+
+.round-label {
+    font-size: clamp(13px, 1.3vw, 17px);
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--sky-blue);
+    margin-bottom: 6px;
 }
 
 
@@ -786,28 +854,6 @@ body {
     height: 22px;
     fill: var(--persian-blue);
     flex-shrink: 0;
-}
-
-
-/* ================= RESULT / BONUS TOASTS ================= */
-
-.resultCard {
-    background: var(--white);
-    border-radius: 25px;
-    padding: 30px 45px;
-
-    text-align: center;
-
-    font-size: clamp(20px, 2vw, 32px);
-    font-weight: 700;
-    color: var(--blue-black);
-
-    box-shadow: 0 8px 20px rgba(10, 23, 36, 0.3);
-}
-
-#resultIcon {
-    font-size: 55px;
-    margin-bottom: 10px;
 }
 
 
@@ -916,6 +962,52 @@ body {
     color: var(--sky-blue);
 }
 
+.finalItemList {
+    width: 100%;
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.finalItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.1);
+    color: var(--white);
+    font-size: clamp(14px, 1.3vw, 18px);
+    font-weight: 600;
+}
+
+/* Small-scale version of a spend flavor's icon (teddy bear, candy, etc.) for
+   the HUD Items row and the finish-screen grouped list - sized off the
+   containing font-size (1em) rather than the on-road obstacle sizing. */
+.flavor-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.flavor-list-icon {
+    width: 100%;
+    height: 100%;
+    fill: var(--persian-blue);
+}
+
+/* The finish screen is a dark "statement" surface, so its icons switch to
+   Malibu for contrast - same rule already applied to every other icon there. */
+.finalItem .flavor-list-icon {
+    fill: var(--malibu);
+}
+
 
 /* ================= RESPONSIVE ================= */
 
@@ -953,15 +1045,6 @@ body {
 
     #goalBox {
         min-width: 180px;
-    }
-
-    .choice {
-        width: 240px;
-        height: 155px;
-    }
-
-    #decision {
-        width: 240px;
     }
 
     .startCard,
