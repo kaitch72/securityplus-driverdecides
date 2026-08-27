@@ -574,27 +574,140 @@ body {
     display: none;
     align-items: center;
     justify-content: center;
+}
 
+/* A slight scrim over the game screen (road, HUD, scooter all still
+   visible underneath, just dimmed) rather than a solid takeover - the
+   popup card is the point, not a second background. Matches Coin Catch. */
+#startScreen {
+    display: flex;
+    background: rgba(10, 23, 36, 0.35);
+}
+
+#finishScreen {
     background: rgba(10, 23, 36, 0.55);
 }
 
-#startScreen {
-    display: flex;
-}
-
 .startCard {
-    width: min(900px, 90vw);
-    max-height: 94vh;
-    overflow-y: auto;
+    position: relative;
+    overflow: hidden;
+
+    width: min(480px, 90vw);
 
     background: var(--white);
-    border-radius: 35px;
+    border-radius: 32px;
 
-    padding: 45px;
+    padding: clamp(32px, 4vw, 48px) clamp(28px, 3.4vw, 40px) clamp(28px, 3vw, 36px);
 
     text-align: center;
 
-    box-shadow: 0 12px 30px rgba(10, 23, 36, 0.3);
+    box-shadow: 0 20px 44px rgba(10, 23, 36, 0.28);
+}
+
+.startCard::before {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: var(--hawkes-blue);
+    z-index: 0;
+}
+
+.startCard::after {
+    content: "";
+    position: absolute;
+    bottom: -66px;
+    left: -46px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: var(--hawkes-blue);
+    opacity: 0.7;
+    z-index: 0;
+}
+
+.startCard > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* ================= START BADGE (animated icon sticker) ================= */
+
+.start-badge-wrap {
+    position: relative;
+    z-index: 1;
+
+    width: clamp(84px, 9vw, 112px);
+    height: clamp(84px, 9vw, 112px);
+
+    margin: 0 auto clamp(18px, 2.2vw, 26px);
+
+    animation: startBadgeFloat 3.2s ease-in-out infinite;
+}
+
+.start-badge {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 50%;
+
+    background: linear-gradient(135deg, var(--persian-blue) 0%, var(--blue-bird) 100%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 12px 22px rgba(25, 67, 220, 0.35);
+}
+
+.start-badge-icon {
+    width: 52%;
+    height: 52%;
+    fill: var(--white);
+}
+
+@keyframes startBadgeFloat {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-7px) rotate(-5deg); }
+}
+
+.start-sparkle {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    animation: startTwinkle 1.8s ease-in-out infinite;
+}
+
+.start-sparkle svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.start-sparkle--a {
+    top: -6px;
+    left: -10px;
+    width: 22px;
+    height: 22px;
+    fill: var(--blue-bird);
+}
+
+.start-sparkle--b {
+    bottom: 2px;
+    right: -8px;
+    width: 16px;
+    height: 16px;
+    fill: var(--malibu);
+    animation-delay: 0.5s;
+}
+
+@keyframes startTwinkle {
+    0%, 100% { opacity: 0.95; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.7); }
 }
 
 .finishCard {
@@ -631,24 +744,12 @@ body {
     position: relative;
 }
 
-.bigIcon {
-    font-size: clamp(50px, 6vw, 90px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.big-icon-svg {
-    width: clamp(50px, 6vw, 90px);
-    height: clamp(50px, 6vw, 90px);
-    fill: var(--persian-blue);
-}
-
 .startCard h1 {
-    font-size: clamp(38px, 4.6vw, 68px);
+    font-size: clamp(26px, 3vw, 34px);
     font-weight: 800;
     color: var(--blue-black);
-    margin: 10px 0 20px;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
 }
 
 .finishCard h1 {
@@ -680,17 +781,6 @@ body {
     fill: var(--malibu);
 }
 
-.startCard h2 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: clamp(23px, 2.6vw, 36px);
-    font-weight: 800;
-    color: var(--blue-black);
-    margin-top: 35px;
-}
-
 .finishCard h2 {
     display: flex;
     align-items: center;
@@ -703,10 +793,10 @@ body {
 }
 
 .startCard p {
-    font-size: clamp(16px, 1.6vw, 23px);
+    font-size: clamp(14px, 1.3vw, 16px);
     font-weight: 400;
-    color: var(--blue-black);
-    line-height: 1.35;
+    color: rgba(10, 23, 36, 0.68);
+    line-height: 1.5;
 }
 
 .results-message {
@@ -717,7 +807,8 @@ body {
 }
 
 .introLead {
-    margin-bottom: 30px;
+    max-width: 340px;
+    margin: 0 auto clamp(22px, 2.6vw, 30px);
 }
 
 
@@ -747,59 +838,6 @@ body {
     height: 15px;
     fill: var(--malibu);
     vertical-align: -2px;
-}
-
-
-/* ================= LEVEL PREVIEW (start screen) ================= */
-
-#levelPreview {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin: 25px auto 20px;
-    max-width: 700px;
-}
-
-.levelPreviewCard {
-    min-height: 105px;
-
-    border: 4px solid var(--hawkes-blue);
-    border-radius: 20px;
-
-    background: var(--white);
-
-    font-family: var(--font-brand);
-    color: var(--blue-black);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 10px;
-
-    box-shadow: 0 5px 10px rgba(10, 23, 36, 0.08);
-}
-
-.levelPreviewCard .roundTag {
-    font-size: clamp(11px, 1vw, 13px);
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: var(--persian-blue);
-}
-
-.levelPreviewCard .levelIcon {
-    font-size: clamp(22px, 2.4vw, 30px);
-}
-
-.levelPreviewCard strong {
-    font-size: clamp(15px, 1.6vw, 20px);
-}
-
-.levelPreviewCard .levelCost {
-    font-weight: 400;
-    color: var(--persian-blue);
 }
 
 
@@ -856,13 +894,6 @@ body {
 .brandButton:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-}
-
-.button-icon {
-    width: 0.85em;
-    height: 0.85em;
-    fill: var(--white);
-    flex-shrink: 0;
 }
 
 .brandButton--onDark {
