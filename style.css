@@ -33,15 +33,28 @@ body {
     font-family: var(--font-brand);
 }
 
+/* Kiosk frame (2026-08-27): the game no longer fills the raw viewport -
+   it sits as a rounded 16:9 card on a neutral grey page, matching the
+   other three games' template. */
 body {
-    background: var(--hawkes-blue);
+    background: #E4E6E8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Fits flush to whichever axis is tighter - full-bleed top/bottom on a
+   wide screen, full-bleed left/right on a tall one - and only letterboxes
+   grey on the other axis, rather than always leaving a margin. */
 #game {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: min(100%, calc(100vh * 16 / 9));
+    aspect-ratio: 16 / 9;
+    max-width: 1920px;
+    max-height: 100%;
     overflow: hidden;
+    border-radius: 28px;
+    box-shadow: 0 24px 60px rgba(10, 23, 36, 0.28);
     background: var(--hawkes-blue);
 }
 
@@ -60,10 +73,18 @@ body {
     border-bottom: 3px solid var(--hawkes-blue);
     box-shadow: 0 4px 14px rgba(10, 23, 36, 0.08);
 
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 16px;
     padding: 0 20px;
+}
+
+#topBarLeft {
+    justify-self: start;
+}
+
+#topBarRight {
+    justify-self: end;
 }
 
 .brand-logo {
@@ -73,11 +94,35 @@ body {
 }
 
 #gameTitle {
+    justify-self: center;
     font-size: clamp(18px, 2vw, 26px);
     font-weight: 800;
     color: var(--blue-black);
     line-height: 1;
     white-space: nowrap;
+}
+
+.iconButton {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--persian-blue);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+}
+
+.iconButton:hover {
+    background: var(--hawkes-blue);
+}
+
+.reset-icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--persian-blue);
 }
 
 
@@ -86,9 +131,11 @@ body {
 #sky {
     position: absolute;
     inset: 0 0 58% 0;
-    background: linear-gradient(180deg, var(--sky-blue) 0%, var(--onahau) 100%);
+    background: var(--sky-blue);
 }
 
+/* Off-brand hex, kept on purpose (2026-08-27) - Kayla likes this green
+   even though it isn't one of the Securityplus tokens. */
 #grass {
     position: absolute;
     left: 0;
@@ -98,6 +145,8 @@ body {
     background: #a9dba0;
 }
 
+/* Plain now (2026-08-27) - the Persian Blue outline and the Malibu
+   center dashes are both gone; just the flat Blue Black brand color. */
 #road {
     position: absolute;
     left: 0;
@@ -105,38 +154,6 @@ body {
     top: 43%;
     height: 36%;
     background: var(--blue-black);
-    border-top: 7px solid var(--persian-blue);
-    border-bottom: 7px solid var(--persian-blue);
-}
-
-.roadLine {
-    position: absolute;
-    width: 8%;
-    height: 10px;
-    background: var(--malibu);
-    border-radius: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.line1 {
-    left: 4%;
-}
-
-.line2 {
-    left: 27%;
-}
-
-.line3 {
-    left: 50%;
-}
-
-.line4 {
-    left: 73%;
-}
-
-.line5 {
-    left: 96%;
 }
 
 
@@ -145,7 +162,20 @@ body {
 .tree {
     position: absolute;
     z-index: 4;
-    font-size: clamp(28px, 4vw, 65px);
+}
+
+/* Two real brand icons (Kayla's exports, 2026-08-27) replace the old 🌳
+   emoji - single-color Persian Blue, sized by height so both the single
+   pine and the pine-cluster variant read at the same scale the emoji did. */
+.tree-icon {
+    display: block;
+    height: clamp(28px, 4vw, 65px);
+    width: auto;
+    fill: var(--persian-blue);
+}
+
+.tree-icon--cluster {
+    height: clamp(24px, 3.4vw, 56px);
 }
 
 .tree1 {
@@ -184,7 +214,7 @@ body {
     right: 12px;
 
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 14px;
 }
 
@@ -196,6 +226,10 @@ body {
     padding: 12px 18px;
     box-shadow: 0 5px 10px rgba(10, 23, 36, 0.14);
     font-weight: bold;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .statLabel {
@@ -233,14 +267,6 @@ body {
 
 .moneyBox {
     min-width: 130px;
-}
-
-.spentBox {
-    background: var(--magnolia);
-}
-
-.savingsBox {
-    background: var(--onahau);
 }
 
 #itemsBox {

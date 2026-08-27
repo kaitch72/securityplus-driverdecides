@@ -3,33 +3,48 @@
    SECURITYPLUS FINANCIAL LITERACY GAME
    Ages 7-10
 
-   CORE LESSON: saving toward a goal.
-   The scooter carries one shared pot of money
-   (the wallet). Steering into a piggy bank moves
-   money OUT of the wallet and INTO the savings
-   goal. Steering into a spend icon moves that
-   same money out of the wallet to buy that item
-   instead - each one has its own price, shown
-   right on the icon. Sitting in an empty lane
-   does nothing at all. Every lane you choose is
-   a real decision, and neither one is the "bad"
-   choice - that's the whole game.
+   CORE LESSON: manage one pot of money toward a goal.
+   The scooter carries a single wallet, starting at $0.
+   Steering into a dollar icon EARNS money and adds it to
+   the wallet. Steering into a spend icon SPENDS money and
+   subtracts it from that same wallet - there's no separate
+   safe pot, so money you've earned can still be spent away.
+   The wallet can go negative if you spend more than you
+   have. The ride keeps going, spawning new earn/spend icons,
+   until the wallet reaches the round's goal amount (or a
+   generous safety cap is hit). Sitting in an empty lane does
+   nothing at all. Every lane you choose is a real decision.
 ======================================== */
 
 /* ================= TUNING CONSTANTS ================= */
 
-const STARTING_MONEY = 20;
-const SAVE_AMOUNT = 2;    // moves from wallet -> savings per piggy bank catch - fixed every time
+const STARTING_MONEY = 0;
 
-// Spend catches are NOT a fixed amount (2026-08-26, pricing pass) - each
-// spend flavor carries its own price (see SPEND_FLAVORS below), from $1
-// candy up to a $5 video game. That means a kid can afford a few cheap
-// items, or one bigger one, instead of every catch draining the same
-// amount - and the price now shows right on the icon as it travels (see
-// .obstacle-price in style.css) so it's part of the decision, not a
-// surprise after the fact.
+// Neither earn nor spend is a fixed amount (2026-08-26, pricing passes).
+// A dollar icon is worth $1 or $2 (EARN_AMOUNTS below, picked per catch) -
+// not every catch is the same size, so it isn't always worth the same
+// toward the goal. Spend flavors carry their own price too (see
+// SPEND_FLAVORS below), from $1 candy up to a $5 video game - a kid can
+// afford a few cheap items, or one bigger one, instead of every catch
+// draining the same amount. Both prices show right on the icon as it
+// travels (see .obstacle-price in style.css) so they're part of the
+// decision, not a surprise after the fact.
+const EARN_AMOUNTS = [1, 2];
 
-const TOTAL_OBSTACLES = 24;            // 12 save + 12 spend icons per ride, spawned one at a time
+function pickEarnAmount() {
+    return EARN_AMOUNTS[Math.floor(Math.random() * EARN_AMOUNTS.length)];
+}
+
+// Ride length is no longer fixed - it keeps spawning icons until the
+// wallet reaches the goal (2026-08-27). This is the size of one shuffled
+// earn/spend batch; once a batch runs out mid-ride, a fresh batch is
+// shuffled in so pacing stays even no matter how long the ride runs.
+const OBSTACLES_PER_BATCH = 24;        // 12 earn + 12 spend icons per batch, spawned one at a time
+
+// Safety net only - not a normal target. If a ride somehow never reaches
+// its goal (e.g. a kid isn't catching anything), this stops it from
+// running forever instead of ending naturally at the goal.
+const MAX_OBSTACLES_SAFETY = 150;
 const SPAWN_INTERVAL_MIN_MS = 700;     // shortest gap between one obstacle spawning and the next
 const SPAWN_INTERVAL_MAX_MS = 1400;    // longest gap - randomized so spacing never feels metronomic
 const TRAVEL_SPEED_PCT_PER_MS = 0.017; // how fast obstacles cross the screen (slowed yet again - still too fast to read at 0.024)
@@ -47,7 +62,7 @@ const LANES = [50, 62, 74];
 
 let wallet = STARTING_MONEY;
 let spent = 0;
-let savings = 0;
+let earned = 0;
 let items = [];
 
 let gameRunning = false;
@@ -68,14 +83,14 @@ let animationFrameId = null;
 
 
 /* ================= LEVELS =================
-   Three rounds, each with a bigger savings goal.
+   Three rounds, each with a bigger goal amount.
    Same wallet/catch-amount rules every round -
    only the target gets harder to reach.
 =========================================== */
 
 const LEVELS = [
-    { icon: "🧸", name: "Toy", cost: 5 },
-    { icon: "🎮", name: "Game", cost: 10 },
+    { icon: "🧸", name: "Toy", cost: 10 },
+    { icon: "🎮", name: "Game", cost: 15 },
     { icon: "🛴", name: "Scooter", cost: 20 }
 ];
 
@@ -85,16 +100,17 @@ let levelResults = [];   // true/false per completed round, this playthrough
 
 /* ================= OBSTACLE ART =================
    Reuses the same brand icon paths already inlined
-   in index.html, so a caught piggy bank / spend icon
-   always matches the Bank / Spent HUD stats it feeds.
+   in index.html, so a caught dollar / spend icon
+   always matches the Earned / Spent HUD stats it feeds.
 =================================================== */
 
-const PIGGY_SVG = `
-    <svg class="obstacle-icon" viewBox="0 0 167.52 169.98" aria-hidden="true">
-        <path d="M40.89,56.23c-17.66,9.5-31.34,26.42-30.85,47.1.36,14.95,8.17,28.41,21.11,35.73l6.36,3.46.02,17.47,18.75-.06,4.48-13.44c11.4,1.25,22.1,1.22,33.62,0l4.27,13.45,18.88.06.03-18.48c6.45-2.74,11.46-6.71,16.25-11.54h23.73s0-40.01,0-40.01h-14.15s-6.53-14.05-6.53-14.05l4.7-25.92c-8.83-.47-16.21,3.34-22.13,9.31l-5.34-3.14c2.28-3.31,3.91-6.14,5.17-9.76,5.9-3.84,12.75-6.35,19.98-6.38l14.53-.06-6.58,33.94,3.12,6.05,17.21.02v59.99s-29.68.01-29.68.01l-10.31,7.73-.02,22.26h-36.19s-4.09-12.78-4.09-12.78h-19.51s-4.07,12.79-4.07,12.79l-36.11-.02v-21.24C6.78,137.19-3.96,113.82,1.35,90.55c2.24-10.12,7.01-18.89,13.84-26.7,5.8-6.64,12.74-11.91,20.69-16.35l5,8.72Z"/>
-        <path d="M107.44,29.96c0,16.55-13.41,29.96-29.96,29.96s-29.96-13.41-29.96-29.96S60.93,0,77.48,0s29.96,13.41,29.96,29.96ZM97.4,29.97c0-11-8.92-19.92-19.92-19.92s-19.92,8.92-19.92,19.92,8.92,19.92,19.92,19.92,19.92-8.92,19.92-19.92Z"/>
-        <rect x="47.55" y="69.97" width="59.97" height="10"/>
-        <circle cx="119.97" cy="102.47" r="7.44"/>
+// Earn catches show a dollar bill (2026-08-27, swapped from the piggy
+// bank) - there's no separate protected pot anymore, so the piggy bank's
+// "safe savings" visual no longer matches what this catch actually does.
+const EARN_SVG = `
+    <svg class="obstacle-icon" viewBox="0 0 159.84 138.36" aria-hidden="true">
+        <path d="M57.87,136.07c-20.64,4.62-38.84,2.03-57.87-5.74V8.06s10.98,4.22,10.98,4.22c16.62,6.39,34.41,6.4,51.59,1.77l18.7-5.79c7.47-2.31,14.6-4.54,22.23-6.3,19.83-4.1,37.78-1.61,56.33,6.01v122.38c-20.16-9.11-39.02-11.73-60.24-6.79l-21.49,6.55-20.24,5.97ZM63.19,124.37l24.79-7.93c10.53-3.17,21.05-5.07,31.89-5.46,1.74-15.42,14.69-26.9,30.01-26.8l-.02-45.03c-16.49-.23-29.59-13.04-30.01-29.2-8.11.12-15.45,1.78-23.02,3.87l-26.86,8.61c-9.91,3.04-19.76,4.54-30.4,4.85-1.46,15.26-14.32,26.86-29.62,26.83v45.01c16.51.28,29.55,13.24,29.91,29.36,7.9-.44,15.4-1.82,23.32-4.1ZM149.87,14.69c-6.81-2.21-13.15-3.52-20.07-4.4.93,10.61,9.17,18.64,20.06,18.82v-14.42ZM29.81,26.62c-7.16-.8-13.16-2.05-19.84-4.02v21.51c10.33-.06,18.76-7.54,19.84-17.48ZM149.87,115.72v-21.55c-10.41,0-18.51,7.51-19.7,17.46,6.7.77,12.9,2.06,19.7,4.09ZM29.91,127.82c-1.16-11.06-9.43-18.43-19.93-18.68l.03,14.45c6.77,2.18,13.11,3.6,19.9,4.23Z"/>
+        <path d="M103.24,87.67c-5.21,11.34-17.12,19.1-29.16,15.61-7.57-2.2-13.53-7.43-17.07-14.51-7.85-15.73-5.78-36.67,7.3-48.46,8.15-7.34,19.64-8.27,28.62-1.91,14.96,10.59,17.95,32.64,10.31,49.27ZM88.8,90.43c10.79-9.91,11.26-29.48,1.87-40.72-2.79-3.33-6.31-5.4-10.28-5.53-4.19-.13-7.86,1.72-10.78,4.91-9.63,10.55-9.57,29.32-.05,40.02,5.18,5.82,13.26,6.8,19.24,1.31Z"/>
     </svg>
 `;
 
@@ -213,8 +229,6 @@ const scooter = document.getElementById("scooter");
 const obstaclesLayer = document.getElementById("obstacles");
 
 const walletDisplay = document.getElementById("wallet");
-const spentDisplay = document.getElementById("spent");
-const savingsDisplay = document.getElementById("savings");
 const itemsDisplay = document.getElementById("items");
 
 const instructions = document.getElementById("instructions");
@@ -223,7 +237,7 @@ const startButton = document.getElementById("startButton");
 
 const finishScreen = document.getElementById("finishScreen");
 
-const finalSavings = document.getElementById("finalSavings");
+const finalEarned = document.getElementById("finalEarned");
 const finalSpent = document.getElementById("finalSpent");
 const prizeResult = document.getElementById("prizeResult");
 
@@ -238,6 +252,13 @@ function setText(element, value) {
     if (element) {
         element.textContent = value;
     }
+}
+
+// The wallet can go negative now that earning and spending share one pot
+// (2026-08-27) - this formats a dollar amount with the sign in the right
+// place ("-$3" instead of "$-3") wherever the wallet itself is shown.
+function formatMoney(amount) {
+    return amount < 0 ? "-$" + Math.abs(amount) : "$" + amount;
 }
 
 // Which lane (0, 1, 2) is the scooter's current Y position closest to?
@@ -273,9 +294,12 @@ function updateGoalProgress() {
         return;
     }
 
-    const percentage = Math.min(
-        100,
-        Math.round((savings / selectedGoal.cost) * 100)
+    // Wallet can be negative (spent more than you have), so the goal bar
+    // itself clamps at 0% - but the text below still shows the real,
+    // possibly-negative wallet number so that risk stays visible.
+    const percentage = Math.max(
+        0,
+        Math.min(100, Math.round((wallet / selectedGoal.cost) * 100))
     );
 
     if (goalProgressFill) {
@@ -284,7 +308,7 @@ function updateGoalProgress() {
 
     setText(
         goalProgressText,
-        `$${savings} / $${selectedGoal.cost}`
+        `${formatMoney(wallet)} / $${selectedGoal.cost}`
     );
 
     setText(
@@ -332,9 +356,11 @@ function updateInventory() {
 
 function updateMoney() {
 
-    setText(walletDisplay, wallet);
-    setText(spentDisplay, spent);
-    setText(savingsDisplay, savings);
+    // Spent/earned no longer have their own HUD cards (2026-08-27) - they
+    // still get tallied for the finish-screen recap (see finishGame()),
+    // just not shown live while riding. Only the wallet card and the goal
+    // progress bar update during the ride now.
+    setText(walletDisplay, formatMoney(wallet));
 
     updateInventory();
     updateGoalProgress();
@@ -440,18 +466,19 @@ function releaseScooter(event) {
 
 
 /* ================= OBSTACLE SPAWNING =================
-   Save and spend icons no longer arrive in synced pairs -
+   Earn and spend icons no longer arrive in synced pairs -
    each one spawns on its own, at a randomized interval, in
    a randomly chosen lane, so they feel scattered across the
-   ride instead of ticking by two-at-a-time. The overall mix
-   (12 save, 12 spend) stays fixed and is shuffled once per
-   ride so the balance never changes, only the order.
+   ride instead of ticking by two-at-a-time. Each batch keeps
+   a fixed 12 earn / 12 spend mix, shuffled - and once a batch
+   runs out, spawnNextObstacle() shuffles in a fresh one, since
+   the ride no longer stops after one fixed batch (2026-08-27).
 ======================================================= */
 
 function buildObstacleQueue() {
 
     const queue = [];
-    const half = TOTAL_OBSTACLES / 2;
+    const half = OBSTACLES_PER_BATCH / 2;
 
     for (let i = 0; i < half; i++) {
         queue.push("save");
@@ -476,7 +503,10 @@ function randomSpawnDelay() {
 
 function maybeSpawnObstacle(dt) {
 
-    if (obstaclesSpawned >= TOTAL_OBSTACLES) {
+    // Ride length now tracks the goal, not a fixed obstacle count - keep
+    // spawning as long as the ride is running (checkRideEnd handles
+    // stopping once the goal - or the safety cap - is reached).
+    if (obstaclesSpawned >= MAX_OBSTACLES_SAFETY) {
         return;
     }
 
@@ -490,6 +520,10 @@ function maybeSpawnObstacle(dt) {
 }
 
 function spawnNextObstacle() {
+
+    if (obstacleQueue.length === 0) {
+        obstacleQueue = buildObstacleQueue();
+    }
 
     const type = obstacleQueue.shift();
 
@@ -511,16 +545,19 @@ function createObstacle(type, lane) {
 
     // Spend obstacles get a randomly picked flavor (teddy bear, video game,
     // candy, etc.) so the road shows real variety instead of one repeated
-    // icon; save obstacles are always the piggy bank.
+    // icon; earn obstacles are always the dollar icon, but the amount
+    // they're worth is picked per catch too (see EARN_AMOUNTS above) - not
+    // every catch is worth the same.
     const flavor = type === "spend" ? pickSpendFlavor() : null;
-    el.innerHTML = type === "save" ? PIGGY_SVG : flavor.svg;
+    const earnAmount = type === "save" ? pickEarnAmount() : null;
+    el.innerHTML = type === "save" ? EARN_SVG : flavor.svg;
 
-    // Price tag on every obstacle (2026-08-26, pricing pass) - save is
-    // always SAVE_AMOUNT, spend varies per flavor - so the cost is visible
-    // before a kid decides whether to steer into it. +/- prefix (added in
-    // the color-differentiation follow-up) matches the catch toast's own
-    // "+$2 saved!" / "-$3 spent" wording.
-    const price = type === "save" ? SAVE_AMOUNT : flavor.cost;
+    // Price tag on every obstacle (2026-08-26, pricing pass) - both earn
+    // and spend vary now, so the cost is visible before a kid decides
+    // whether to steer into it. +/- prefix (added in the color-
+    // differentiation follow-up) matches the catch toast's own
+    // "+$2 earned!" / "-$3 spent" wording.
+    const price = type === "save" ? earnAmount : flavor.cost;
     const sign = type === "save" ? "+" : "-";
     const priceTag = document.createElement("span");
     priceTag.className = "obstacle-price";
@@ -538,6 +575,7 @@ function createObstacle(type, lane) {
         type: type,
         lane: lane,
         flavor: flavor,
+        earnAmount: earnAmount,
         x: SPAWN_X,
         resolved: false,
         el: el
@@ -587,16 +625,20 @@ function resolveObstacle(obstacle) {
 
     if (obstacle.type === "save") {
 
-        const amount = Math.min(SAVE_AMOUNT, wallet);
-        wallet -= amount;
-        savings += amount;
+        // Earning always adds the full amount - no cap needed here.
+        const amount = obstacle.earnAmount;
+        wallet += amount;
+        earned += amount;
 
         spawnSparkles(obstacle.lane);
-        spawnToast("+$" + amount + " saved!", "toast--save", obstacle.lane);
+        spawnToast("+$" + amount + " earned!", "toast--save", obstacle.lane);
 
     } else {
 
-        const amount = Math.min(obstacle.flavor.cost, wallet);
+        // Spending is no longer capped at what's in the wallet
+        // (2026-08-27) - the wallet can go negative, so overspending is a
+        // real, felt consequence instead of a free pass at $0.
+        const amount = obstacle.flavor.cost;
         wallet -= amount;
         spent += amount;
 
@@ -614,8 +656,8 @@ function resolveObstacle(obstacle) {
 
 function spawnSparkles(lane) {
 
-    // A little celebratory burst of sparkles on every piggy-bank catch -
-    // makes "saving" feel rewarding, separate from the floating +$ toast.
+    // A little celebratory burst of sparkles on every earn catch -
+    // makes earning feel rewarding, separate from the floating +$ toast.
     const centerLeft = COLLISION_X;
     const centerTop = LANES[lane];
     const sparkleCount = 7;
@@ -715,12 +757,17 @@ function checkRideEnd() {
         return;
     }
 
-    if (wallet <= 0) {
+    // The ride now runs until the wallet reaches the goal (2026-08-27),
+    // even if it dips negative along the way - it's no longer over the
+    // instant the wallet hits zero.
+    if (selectedGoal && wallet >= selectedGoal.cost) {
         finishGame();
         return;
     }
 
-    if (obstaclesSpawned >= TOTAL_OBSTACLES && obstacles.length === 0) {
+    // Safety net only (see MAX_OBSTACLES_SAFETY above) - keeps a ride that
+    // never reaches its goal from running forever.
+    if (obstaclesSpawned >= MAX_OBSTACLES_SAFETY && obstacles.length === 0) {
         finishGame();
     }
 }
@@ -738,7 +785,7 @@ function finishGame() {
     dragging = false;
     stopGameLoop();
 
-    setText(finalSavings, "$" + savings);
+    setText(finalEarned, "$" + earned);
     setText(finalSpent, "$" + spent);
 
     updateGoalProgress();
@@ -750,7 +797,7 @@ function finishGame() {
         if (items.length === 0) {
 
             finalItems.innerHTML =
-                "<span>Nothing bought this ride - it all went to savings!</span>";
+                "<span>Nothing bought this ride - it all stayed in the wallet!</span>";
 
         } else {
 
@@ -795,12 +842,12 @@ function finishGame() {
 
     const shortfall =
         selectedGoal
-            ? Math.max(0, selectedGoal.cost - savings)
+            ? Math.max(0, selectedGoal.cost - wallet)
             : 0;
 
     const reachedGoal =
         selectedGoal &&
-        savings >= selectedGoal.cost;
+        wallet >= selectedGoal.cost;
 
     levelResults[currentLevelIndex] = !!reachedGoal;
 
@@ -828,14 +875,14 @@ function finishGame() {
 
         goalCompleteMessage.textContent = reachedGoal
             ? `🎉 You saved enough for your ${selectedGoal.name} - and here's what you bought along the way!`
-            : `You saved $${savings} of the $${selectedGoal.cost} you needed for your ${selectedGoal.name} - but here's what you got instead!`;
+            : `You ended with ${formatMoney(wallet)} of the $${selectedGoal.cost} you needed for your ${selectedGoal.name} - but here's what you got instead!`;
     }
 
     if (prizeResult) {
 
         let message = reachedGoal
-            ? "Nice riding! Every piggy bank you caught added up to your goal."
-            : "This ride, more of your money went to spending than saving. Steer into more piggy banks next time if you want to reach your goal!";
+            ? "Nice riding! Every dollar you earned added up to your goal."
+            : "This ride, spending ate into more than you earned. Steer into more dollars - and fewer spend icons - next time if you want to reach your goal!";
 
         if (isLastLevel) {
             const roundsWon = levelResults.filter(Boolean).length;
@@ -939,7 +986,7 @@ function resetGame() {
 
     wallet = STARTING_MONEY;
     spent = 0;
-    savings = 0;
+    earned = 0;
     items = [];
 
     selectedGoal = null;
@@ -996,7 +1043,7 @@ function beginRide() {
 
     wallet = STARTING_MONEY;
     spent = 0;
-    savings = 0;
+    earned = 0;
     items = [];
 
     scooterY = LANES[1];
@@ -1031,6 +1078,23 @@ if (startButton) {
 
     startButton.addEventListener("click", function () {
         beginRide();
+    });
+}
+
+
+/* ================= TOP BAR RESET =================
+   Persistent restart control (2026-08-27), added alongside the new
+   kiosk-frame top bar - lets a kid (or Kayla, between playtests) bail
+   out to the start screen from anywhere, not just after finishing a
+   ride. Reuses the existing resetGame() - safe to call from any state.
+=================================================== */
+
+const resetButton = document.getElementById("resetButton");
+
+if (resetButton) {
+
+    resetButton.addEventListener("click", function () {
+        resetGame();
     });
 }
 
