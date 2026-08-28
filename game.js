@@ -96,6 +96,8 @@ const LEVELS = [
 
 let currentLevelIndex = 0;
 let levelResults = [];   // true/false per completed round, this playthrough
+let finishOutcome = null;  // "retry" | "advance" | "complete" - drives the
+                            // simplified round-result popup (2026-08-28)
 
 
 /* ================= OBSTACLE ART =================
@@ -138,6 +140,23 @@ const GAME_DEVICE_SVG = `
         <ellipse cx="72.31" cy="112.25" rx="7.43" ry="7.42"/>
     </svg>
 `;
+
+// Goal-preview icons for the simplified round-result popup (2026-08-28) -
+// reuses the same brand-line-icon style as the spend flavors above (Toy ->
+// the Teddy Bear spend icon, Game -> the Video Game spend icon) plus a new
+// scooter icon matching the top-bar scooter-icon path in index.html, so the
+// upcoming/just-finished goal reads as a brand icon, not an emoji.
+const SCOOTER_GOAL_SVG = `
+    <svg class="goal-preview-icon" viewBox="0 0 159.8 139.7" aria-hidden="true">
+        <path d="M25.21,89.9c12,.24,21.62,8.43,24.35,19.89h61.01c1.6-8.21,6.94-14.74,14.74-18.12L105.82,9.99h-25.84s0-9.99,0-9.99h34s21.15,89.84,21.15,89.84c11.19.04,20.54,7.59,23.54,17.46,3.36,11.05-1.07,22.29-10.13,28.3-9.44,6.26-21.98,5.24-30.35-2.29-4.05-3.64-6.57-8.08-7.65-13.52h-61.03c-2.79,12.84-14.82,21.39-27.77,19.71C8.75,137.8-.94,126.11.07,113.05c1-12.93,11.8-23.41,25.14-23.15ZM39.94,114.77c0-8.28-6.72-14.98-15-14.98s-15,6.71-15,14.98,6.72,14.98,15,14.98,15-6.71,15-14.98ZM149.84,114.77c0-8.28-6.72-14.98-15-14.98s-15,6.71-15,14.98,6.72,14.98,15,14.98,15-6.71,15-14.98Z"/>
+    </svg>
+`;
+
+const GOAL_ICON_SVGS = {
+    Toy: TOY_BEAR_SVG.replace('class="obstacle-icon"', 'class="goal-preview-icon"'),
+    Game: GAME_DEVICE_SVG.replace('class="obstacle-icon"', 'class="goal-preview-icon"'),
+    Scooter: SCOOTER_GOAL_SVG
+};
 
 const PUZZLE_SVG = `
     <svg class="obstacle-icon" viewBox="0 0 159.78 159.7" aria-hidden="true">
@@ -237,10 +256,6 @@ const startButton = document.getElementById("startButton");
 
 const finishScreen = document.getElementById("finishScreen");
 
-const finalEarned = document.getElementById("finalEarned");
-const finalSpent = document.getElementById("finalSpent");
-const prizeResult = document.getElementById("prizeResult");
-
 const goalNameDisplay = document.getElementById("goalName");
 const goalProgressFill = document.getElementById("goalProgressFill");
 const goalProgressText = document.getElementById("goalProgressText");
@@ -332,20 +347,44 @@ function updateInventory() {
         return;
     }
 
-    itemsDisplay.innerHTML = items.map(function (item) {
+    // Group repeat catches of the same flavor into one icon slot with a
+    // small count badge (2026-08-28), instead of adding a whole new icon
+    // per catch - a long ride with a lot of spending was making this HUD
+    // box grow wider and wider forever. Capped now at one slot per DISTINCT
+    // flavor (at most the 7 entries in SPEND_FLAVORS), same grouping
+    // approach already used for the finish-screen recap.
+    const grouped = {};
+    const order = [];
+
+    items.forEach(function (item) {
+
+        if (!grouped[item.name]) {
+            grouped[item.name] = {
+                iconHtml: item.iconHtml,
+                name: item.name,
+                count: 0
+            };
+            order.push(item.name);
+        }
+
+        grouped[item.name].count++;
+    });
+
+    itemsDisplay.innerHTML = order.map(function (name) {
+
+        const group = grouped[name];
+
+        // Quantity-label guard (matches the rule used elsewhere): only
+        // show the count badge once a flavor has actually been caught
+        // more than once, so a single catch doesn't get a redundant "×1".
+        const badge = group.count > 1
+            ? `<span class="hud-item-count">×${group.count}</span>`
+            : "";
+
         return `
-            <span
-                title="${item.name}"
-                style="
-                    display:inline-flex;
-                    align-items:center;
-                    justify-content:center;
-                    width:42px;
-                    height:42px;
-                    font-size:28px;
-                "
-            >
-                ${item.iconHtml}
+            <span class="hud-item-slot" title="${group.name}">
+                ${group.iconHtml}
+                ${badge}
             </span>
         `;
     }).join("");
@@ -785,73 +824,35 @@ function finishGame() {
     dragging = false;
     stopGameLoop();
 
-    setText(finalEarned, "$" + earned);
-    setText(finalSpent, "$" + spent);
-
     updateGoalProgress();
-
-    const finalItems = document.getElementById("finalItems");
-
-    if (finalItems) {
-
-        if (items.length === 0) {
-
-            finalItems.innerHTML =
-                "<span>Nothing bought this ride - it all stayed in the wallet!</span>";
-
-        } else {
-
-            // Group identical catches (e.g. six "Candy" hits) into one badge
-            // with a count, instead of one badge per catch - keeps the
-            // finish screen from growing tall on a rough ride.
-            const grouped = {};
-
-            items.forEach(function (item) {
-                if (!grouped[item.name]) {
-                    grouped[item.name] = {
-                        iconHtml: item.iconHtml,
-                        name: item.name,
-                        count: 0,
-                        total: 0
-                    };
-                }
-
-                grouped[item.name].count++;
-                grouped[item.name].total += item.cost;
-            });
-
-            finalItems.innerHTML = `
-                <div class="finalItemList">
-                    ${Object.values(grouped).map(function (group) {
-                        const countLabel = group.count > 1 ? ` ×${group.count}` : "";
-                        return `
-                            <span class="finalItem">
-                                ${group.iconHtml}
-                                ${group.name}${countLabel}
-                                ($${group.total})
-                            </span>
-                        `;
-                    }).join("")}
-                </div>
-            `;
-        }
-    }
-
-    const finalMessage = document.getElementById("finishSubtitle");
-    const goalCompleteMessage = document.getElementById("goalCompleteMessage");
-
-    const shortfall =
-        selectedGoal
-            ? Math.max(0, selectedGoal.cost - wallet)
-            : 0;
 
     const reachedGoal =
         selectedGoal &&
         wallet >= selectedGoal.cost;
 
-    levelResults[currentLevelIndex] = !!reachedGoal;
-
     const isLastLevel = currentLevelIndex === LEVELS.length - 1;
+
+    if (reachedGoal) {
+        levelResults[currentLevelIndex] = true;
+    }
+
+    // 2026-08-28 simplified round-result popup: a kid can only advance past
+    // a round by reaching its savings goal (see the playAgainButton handler
+    // below), so this screen no longer needs to explain a miss or recap
+    // earned/spent/items - it just confirms the round, shows the goal that
+    // was on the line (retry: same goal again, advance: that goal, done),
+    // and on the very last round wraps the whole run up instead.
+    let outcome;
+
+    if (!reachedGoal) {
+        outcome = "retry";
+    } else if (isLastLevel) {
+        outcome = "complete";
+    } else {
+        outcome = "advance";
+    }
+
+    finishOutcome = outcome;
 
     const roundLabel = document.getElementById("roundLabel");
 
@@ -860,57 +861,62 @@ function finishGame() {
             `Round ${currentLevelIndex + 1} of ${LEVELS.length}`;
     }
 
-    // Messaging reframed 2026-08-26 (spending-tone pass): state the outcome
-    // plainly, then show what was bought either way - a good or bad
-    // outcome hinges on whether the goal was reached, not on the fact that
-    // some money was spent along the way.
-    if (finalMessage) {
+    const finishTitleText = document.getElementById("finishTitleText");
 
-        finalMessage.textContent = reachedGoal
-            ? `You saved enough for your ${selectedGoal.name}!`
-            : `You didn't save enough for your ${selectedGoal.name} this time.`;
+    if (finishTitleText) {
+        finishTitleText.textContent =
+            outcome === "retry" ? "So Close!" : "Great Job!";
     }
 
-    if (goalCompleteMessage) {
+    const goalPreview = document.getElementById("goalPreview");
+    const finishSummary = document.getElementById("finishSummary");
 
-        goalCompleteMessage.textContent = reachedGoal
-            ? `🎉 You saved enough for your ${selectedGoal.name} - and here's what you bought along the way!`
-            : `You ended with ${formatMoney(wallet)} of the $${selectedGoal.cost} you needed for your ${selectedGoal.name} - but here's what you got instead!`;
-    }
+    if (outcome === "complete") {
 
-    if (prizeResult) {
-
-        let message = reachedGoal
-            ? "Nice riding! Every dollar you earned added up to your goal."
-            : "This ride, spending ate into more than you earned. Steer into more dollars - and fewer spend icons - next time if you want to reach your goal!";
-
-        if (isLastLevel) {
-            const roundsWon = levelResults.filter(Boolean).length;
-            message += ` You completed ${roundsWon} of ${LEVELS.length} rounds!`;
+        if (goalPreview) {
+            goalPreview.style.display = "none";
         }
 
-        prizeResult.textContent = message;
+        if (finishSummary) {
+            finishSummary.style.display = "block";
+            finishSummary.textContent = `You completed all ${LEVELS.length} rounds!`;
+        }
+
+    } else {
+
+        if (goalPreview) {
+            goalPreview.style.display = "";
+        }
+
+        if (finishSummary) {
+            finishSummary.style.display = "none";
+            finishSummary.textContent = "";
+        }
+
+        const finalPrizeName = document.getElementById("finalPrizeName");
+        const finalPrizeCost = document.getElementById("finalPrizeCost");
+        const finalPrizeIcon = document.getElementById("finalPrizeIcon");
+
+        if (selectedGoal) {
+
+            setText(finalPrizeName, selectedGoal.name);
+            setText(finalPrizeCost, "$" + selectedGoal.cost);
+
+            if (finalPrizeIcon) {
+                finalPrizeIcon.innerHTML =
+                    GOAL_ICON_SVGS[selectedGoal.name] ||
+                    `<span style="font-size:42px;">${selectedGoal.icon}</span>`;
+            }
+        }
     }
 
     const playAgainLabel = document.getElementById("playAgainLabel");
 
     if (playAgainLabel) {
-        playAgainLabel.textContent = isLastLevel ? "PLAY AGAIN" : "NEXT ROUND";
-    }
-
-    const finalPrizeName = document.getElementById("finalPrizeName");
-    const finalPrizeCost = document.getElementById("finalPrizeCost");
-    const finalPrizeIcon = document.getElementById("finalPrizeIcon");
-
-    if (selectedGoal) {
-
-        setText(finalPrizeName, selectedGoal.name);
-        setText(finalPrizeCost, "$" + selectedGoal.cost);
-
-        if (finalPrizeIcon) {
-            finalPrizeIcon.innerHTML =
-                `<span style="font-size:42px;">${selectedGoal.icon}</span>`;
-        }
+        playAgainLabel.textContent =
+            outcome === "retry" ? "Try Again" :
+            outcome === "complete" ? "Play Again" :
+            "Start";
     }
 
     if (document.activeElement && document.activeElement.blur) {
@@ -936,7 +942,16 @@ function finishGame() {
 }
 
 
-/* ================= PLAY AGAIN / NEXT ROUND ================= */
+/* ================= PLAY AGAIN / TRY AGAIN / NEXT ROUND =================
+   Button behavior now branches on finishOutcome (set in finishGame()):
+   a miss retries the same round (beginRide() again without advancing
+   currentLevelIndex), a non-final win advances to the next round, and
+   the final win resets back to the start screen.
+=========================================================== */
+
+function retryRound() {
+    beginRide();
+}
 
 const playAgainButton =
     document.getElementById("playAgainButton");
@@ -945,10 +960,9 @@ if (playAgainButton) {
 
     playAgainButton.addEventListener("click", function () {
 
-        const isLastLevel =
-            currentLevelIndex === LEVELS.length - 1;
-
-        if (isLastLevel) {
+        if (finishOutcome === "retry") {
+            retryRound();
+        } else if (finishOutcome === "complete") {
             resetGame();
         } else {
             startNextRound();

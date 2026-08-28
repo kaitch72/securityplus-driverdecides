@@ -67,7 +67,11 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 62px;
+    /* Always exactly 1/12 of #game's own height (not the viewport) - #game
+       is the positioned ancestor and has a real computed height via its
+       16:9 aspect-ratio, so a percentage here scales with it automatically
+       at any kiosk/browser size instead of needing breakpoint overrides. */
+    height: calc(100% / 12);
 
     background: var(--white);
     border-bottom: 3px solid var(--hawkes-blue);
@@ -79,18 +83,15 @@ body {
     padding: 0 20px;
 }
 
+/* Empty now that the logo has been removed (2026-08-28) - kept as a grid
+   spacer so #gameTitle still lands in the centered "auto" column instead
+   of sliding left to balance the reset button on the right. */
 #topBarLeft {
     justify-self: start;
 }
 
 #topBarRight {
     justify-self: end;
-}
-
-.brand-logo {
-    height: 30px;
-    width: auto;
-    display: block;
 }
 
 #gameTitle {
@@ -209,7 +210,7 @@ body {
 #hud {
     position: absolute;
     z-index: 30;
-    top: 76px;
+    top: calc(100% / 12 + 14px);
     left: 12px;
     right: 12px;
 
@@ -271,6 +272,10 @@ body {
 
 #itemsBox {
     min-width: 240px;
+    /* Bounded now that repeat catches group into one badged slot instead
+       of one icon each (2026-08-28) - caps at the 7 distinct spend
+       flavors, so this no longer needs to grow open-ended. */
+    max-width: 320px;
 }
 
 #items {
@@ -278,8 +283,49 @@ body {
     min-height: 40px;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 4px;
     font-size: clamp(25px, 2.5vw, 40px);
+}
+
+/* One icon slot per distinct flavor caught, with a small count badge for
+   repeats - replaces the old one-icon-per-catch list so this HUD box
+   stops growing every time the same treat gets caught again. */
+.hud-item-slot {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.hud-item-count {
+    position: absolute;
+    right: -6px;
+    bottom: -4px;
+
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 999px;
+    border: 2px solid var(--white);
+    background: var(--persian-blue);
+    box-shadow: 0 2px 4px rgba(10, 23, 36, 0.2);
+
+    font-family: var(--font-brand);
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+    white-space: nowrap;
 }
 
 #goalBox {
@@ -770,16 +816,6 @@ body {
     flex-shrink: 0;
 }
 
-.heading-icon {
-    width: 0.85em;
-    height: 0.85em;
-    fill: var(--persian-blue);
-    flex-shrink: 0;
-}
-
-.heading-icon--onDark {
-    fill: var(--malibu);
-}
 
 .finishCard h2 {
     display: flex;
@@ -916,99 +952,45 @@ body {
 
 /* ================= FINISH ================= */
 
-#goalCompleteMessage {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 15px;
-    padding: 15px;
-    font-size: clamp(18px, 1.9vw, 26px);
-    font-weight: 700;
-    color: var(--malibu);
-    margin: 20px 0;
+.goal-preview {
+    margin: 28px 0 34px;
 }
 
-.finalMoney {
+.goal-preview-row {
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 70px;
-
-    margin: 25px 0;
+    gap: 8px;
 }
 
-.finalMoney > div {
-    font-size: clamp(18px, 1.8vw, 26px);
-}
-
-.finalMoney .statLabel {
-    color: var(--sky-blue);
+.goal-preview-icon-wrap {
+    display: flex;
+    align-items: center;
     justify-content: center;
 }
 
-.finalMoney .statLabel .mini-icon {
+/* Icon + cost are the secondary line now - sized and colored down (Sky
+   Blue, like round-label) so the goal NAME below reads as the one big
+   headline instead of the two lines competing at the same weight. */
+.goal-preview-icon {
+    width: 26px;
+    height: 26px;
     fill: var(--sky-blue);
-}
-
-.finalMoney strong {
-    display: block;
-    font-size: clamp(28px, 3vw, 42px);
-    color: var(--white);
-    margin-top: 5px;
-}
-
-#finalItems {
-    min-height: 70px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-
-    font-size: clamp(35px, 4vw, 55px);
-}
-
-#finalPrize {
-    margin: 15px auto 25px;
-
-    width: min(400px, 80%);
-
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    padding: 18px;
-
-    background: rgba(255, 255, 255, 0.08);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-
-    font-size: clamp(18px, 2vw, 28px);
-    color: var(--white);
-}
-
-#finalPrizeIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.finalPrize-icon {
-    width: 40px;
-    height: 40px;
-    fill: var(--malibu);
     flex-shrink: 0;
 }
 
-#finalPrize span {
-    font-weight: 400;
+.goal-preview-cost {
+    font-size: clamp(18px, 2vw, 24px);
+    font-weight: 700;
     color: var(--sky-blue);
 }
 
-#prizeResult {
-    min-height: 30px;
-    margin: 10px 0 20px;
-    font-weight: 700;
-    color: var(--malibu);
+.goal-preview-name {
+    display: block;
+    font-size: clamp(34px, 4.6vw, 58px);
+    font-weight: 800;
+    color: var(--white);
+    margin-top: 8px;
 }
 
 .results-footer {
@@ -1019,30 +1001,9 @@ body {
     color: var(--sky-blue);
 }
 
-.finalItemList {
-    width: 100%;
-    margin-top: 12px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.finalItem {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 8px 12px;
-    border-radius: 12px;
-    background: rgba(255,255,255,.1);
-    color: var(--white);
-    font-size: clamp(14px, 1.3vw, 18px);
-    font-weight: 600;
-}
-
 /* Small-scale version of a spend flavor's icon (teddy bear, candy, etc.) for
-   the HUD Items row and the finish-screen grouped list - sized off the
-   containing font-size (1em) rather than the on-road obstacle sizing. */
+   the HUD Items row - sized off the containing font-size (1em) rather than
+   the on-road obstacle sizing. */
 .flavor-icon-wrap {
     display: inline-flex;
     align-items: center;
@@ -1059,29 +1020,18 @@ body {
     fill: var(--persian-blue);
 }
 
-/* The finish screen is a dark "statement" surface, so its icons switch to
-   Malibu for contrast - same rule already applied to every other icon there. */
-.finalItem .flavor-list-icon {
-    fill: var(--malibu);
-}
-
 
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 900px) {
 
     #topBar {
-        height: 52px;
         gap: 10px;
         padding: 0 12px;
     }
 
-    .brand-logo {
-        height: 22px;
-    }
-
     #hud {
-        top: 62px;
+        top: calc(100% / 12 + 10px);
         gap: 7px;
     }
 
@@ -1123,10 +1073,6 @@ body {
     .startCard,
     .finishCard {
         width: 94vw;
-    }
-
-    .finalMoney {
-        gap: 30px;
     }
 
     #instructions {
